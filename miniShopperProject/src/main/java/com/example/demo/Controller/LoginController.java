@@ -27,7 +27,7 @@ import com.example.demo.Repository.LoginDataRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Response.LoginResponse;
 import com.example.demo.Response.RegisterResponse;
-import com.example.demo.Service.UserServiceImpl;
+import com.example.demo.Service.impl.UserServiceImpl;
 import com.example.demo.dtos.LoginDto;
 import com.example.demo.dtos.UserDto;
 import com.example.demo.exception.LoginException;
