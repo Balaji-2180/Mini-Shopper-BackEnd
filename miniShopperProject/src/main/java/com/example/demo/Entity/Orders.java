@@ -11,21 +11,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 
-
 @Entity
 @Table(name="orders")
 public class Orders {
 	
+
+//	@Column(name="orderRecord", length=100, nullable=false)
+//	private String orderRecord;
+	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="orderRecord", length=100, nullable=false)
-	private String orderRecord;
+	@Column(name="orderId", length=100, nullable=false)
+	private String orderId;
+	
+	
 	
 	@Column(name="userId", length=100, nullable=false)
 	private String userId;
-	
-	@Column(name="orderId", length=100, nullable=false)
-	private String orderId;
 	
 	@Column(name="orderName", length=100, nullable=false)
 	private String orderName;
@@ -41,13 +44,7 @@ public class Orders {
 		// TODO Auto-generated constructor stub
 	}
 
-	public String getOrderRecord() {
-		return orderRecord;
-	}
 
-	public void setOrderRecord(String orderRecord) {
-		this.orderRecord = orderRecord;
-	}
 
 	public String getUserId() {
 		return userId;
@@ -92,7 +89,6 @@ public class Orders {
 	public Orders(String orderRecord, String userId, String orderId, String orderName, LocalDate placedDate,
 			String status) {
 		super();
-		this.orderRecord = orderRecord;
 		this.userId = userId;
 		this.orderId = orderId;
 		this.orderName = orderName;
@@ -102,7 +98,7 @@ public class Orders {
 
 	@Override
 	public String toString() {
-		return "Orders [orderRecord=" + orderRecord + ", userId=" + userId + ", orderId=" + orderId + ", orderName="
+		return "Orders [userId=" + userId + ", orderId=" + orderId + ", orderName="
 				+ orderName + ", placedDate=" + placedDate + ", status=" + status + "]";
 	}
 	
