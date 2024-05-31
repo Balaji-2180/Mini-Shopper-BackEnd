@@ -1,25 +1,37 @@
 package com.example.demo.Entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+
+
+@Entity(name ="product")
+@Table(name="product")
 public class Product {
 	
-	@Column(name="", length=100, nullable=false)
+	@Id
+	@Column(name="productId", length=100, nullable=false)
 	private String productId;
 	
-	@Column(name="", length=100, nullable=false)
+	@Column(name="productName", length=100, nullable=false)
 	private String	productName;
 
-	@Column(name="", length=100, nullable=false)
+	@Column(name="brand", length=100, nullable=false)
 	private String	brand;
 
-	@Column(name="", length=100, nullable=false)
+	@Column(name="unitPrice", length=100, nullable=false)
 	private String	unitPrice;
 
-	@Column(name="", length=100, nullable=false)
+	@Column(name="stock", length=100, nullable=false)
 	private String	stock;
 
-	@Column(name="", length=100, nullable=false)
+	@Column(name="category", length=100, nullable=false)
 	private String	category;
 
 	public String getProductId() {
