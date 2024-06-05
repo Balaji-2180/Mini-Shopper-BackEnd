@@ -23,6 +23,8 @@ public class RegisterController {
     @Autowired
     UserServiceImpl userServiceImpl;
 	
+    
+    
 
 
 	@PostMapping("newUser") 
@@ -33,7 +35,7 @@ public class RegisterController {
 		if(u.getFirstName()!=null&&u.getLastName()!=null&&u.getEmail()!=null&&u.getPassword()!=null&&u.getUserId()!=null) {
 
 			
-			//	System.out.println("user entered "+u.toString());
+				System.out.println("user entered "+u.toString());
 				User loginUser=userServiceImpl.checkUserId(u.getUserId());
 				if(loginUser==null) {
 					userServiceImpl.saveUser(u);

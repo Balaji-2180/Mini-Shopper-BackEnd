@@ -36,6 +36,7 @@ public class ProductController {
 		
 		//System.out.println("random UUID "+UUID.randomUUID().toString());
 		//System.out.println("getting into all products"+productServiceImpl.getAllProducts());
+		System.out.println("getting all products");
 		return  new ResponseEntity<List<Product>>(productServiceImpl.getAllProducts(),HttpStatus.OK); 
 	}
 	
@@ -63,7 +64,7 @@ public class ProductController {
 		String productId="PID1040";
 		int count=2;
 		Product updateProduct=productServiceImpl.getByProductId(productId);
-		String updatedStock=(Integer.parseInt(updateProduct.getStock())-count)+"";
+		int updatedStock=(updateProduct.getStock()-count);
 		System.out.println("in update "+updateProduct.getStock());
 		productServiceImpl.updateStock(productId,updatedStock);
 		
