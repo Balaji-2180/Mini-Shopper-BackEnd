@@ -39,10 +39,7 @@ public class LoginData {
 	private LocalTime time;
 
 	
-	public LoginData() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+
 
 
 	public LoginData(String userId, String loginStatus, LocalDate date, LocalTime time) {

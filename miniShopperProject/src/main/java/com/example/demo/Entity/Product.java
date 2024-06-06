@@ -26,13 +26,35 @@ public class Product {
 	private String	brand;
 
 	@Column(name="unitPrice", length=100, nullable=false)
-	private String	unitPrice;
+	private double	unitPrice;
+	
+	@Column(name="discountedPrice", length=100, nullable=false)
+	private double	discountedPrice;
 
 	@Column(name="stock", length=100, nullable=false)
-	private String	stock;
+	private int	stock;
 
 	@Column(name="category", length=100, nullable=false)
 	private String	category;
+	
+	@Column(name="shortDescription", length=100, nullable=false)
+	private String	shortDescription;
+
+	public double getDiscountedPrice() {
+		return discountedPrice;
+	}
+
+	public void setDiscountedPrice(double discountedPrice) {
+		this.discountedPrice = discountedPrice;
+	}
+
+	public String getShortDescription() {
+		return shortDescription;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
 
 	public String getProductId() {
 		return productId;
@@ -58,19 +80,19 @@ public class Product {
 		this.brand = brand;
 	}
 
-	public String getUnitPrice() {
+	public double getUnitPrice() {
 		return unitPrice;
 	}
 
-	public void setUnitPrice(String unitPrice) {
+	public void setUnitPrice(double unitPrice) {
 		this.unitPrice = unitPrice;
 	}
 
-	public String getStock() {
+	public int getStock() {
 		return stock;
 	}
 
-	public void setStock(String stock) {
+	public void setStock(int stock) {
 		this.stock = stock;
 	}
 
@@ -87,8 +109,8 @@ public class Product {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Product(String productId, String productName, String brand, String unitPrice, String stock,
-			String category) {
+	public Product(String productId, String productName, String brand, double unitPrice, int stock,
+			String category, String	shortDescription,double	discountedPrice) {
 		super();
 		this.productId = productId;
 		this.productName = productName;
@@ -96,13 +118,17 @@ public class Product {
 		this.unitPrice = unitPrice;
 		this.stock = stock;
 		this.category = category;
+		this.shortDescription=shortDescription;
+		this.discountedPrice = discountedPrice;
 	}
 
 	@Override
 	public String toString() {
 		return "Product [productId=" + productId + ", productName=" + productName + ", brand=" + brand + ", unitPrice="
-				+ unitPrice + ", stock=" + stock + ", category=" + category + "]";
+				+ unitPrice + ", discountedPrice=" + discountedPrice + ", stock=" + stock + ", category=" + category
+				+ ", shortDescription=" + shortDescription + "]";
 	}
+
 	
 	
 	
