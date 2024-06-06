@@ -18,7 +18,7 @@ public interface ProductService {
 	
 	public List<Product> getAllAvailableProduct();
 	
-	public void updateStock(String productId,String stock);
+	public void updateStock(String productId,int stock);
 	
 
 }
