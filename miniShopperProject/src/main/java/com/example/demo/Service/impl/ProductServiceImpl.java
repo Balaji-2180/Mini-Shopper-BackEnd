@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public void updateStock(String productId,String stock) {
+	public void updateStock(String productId,int stock) {
 		// TODO Auto-generated method stub
 		productRepository.updateStock(productId,stock);
 	}
