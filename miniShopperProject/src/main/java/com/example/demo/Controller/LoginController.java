@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.Entity.LoginData;
-import com.example.demo.Entity.Orders;
 import com.example.demo.Entity.User;
 import com.example.demo.Repository.LoginDataRepository;
 import com.example.demo.Repository.UserRepository;
@@ -117,16 +116,7 @@ public class LoginController {
 		}
 		
 	}
-	
-	@PostMapping("testHere")
-	public ResponseEntity<LoginException> testHere() {
-		LoginException le=new LoginException();
-		le.setStatus("200");
-		le.setMessage("Login Success");
-		
-		return new ResponseEntity<LoginException>(le,HttpStatus.OK);
-		
-	}
+	  
 	
 	@PostMapping("{userId}")
 	public ResponseEntity<UserDto> getUserById(@PathVariable String userId){

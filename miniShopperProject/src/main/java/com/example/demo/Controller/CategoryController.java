@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +37,28 @@ public class CategoryController {
 	@GetMapping("/{categoryId}")
 	public ResponseEntity<Category> getCategoryById(@PathVariable String categoryId){
 		//System.out.println("category by Id  "+categoryService.fetchCategoryById(categoryId).toString());
+		Category category=categoryService.fetchCategoryById(categoryId);
+		if(category==null) {
+			return new ResponseEntity<Category>( category, HttpStatus.NOT_FOUND);	
+		}
 		
-		return new ResponseEntity<Category>(categoryService.fetchCategoryById(categoryId) , HttpStatus.OK);	
+		return new ResponseEntity<Category>( category, HttpStatus.OK);	
 	}
 	
 	
 	@GetMapping("/{categoryId}/products")
 	public ResponseEntity<List<Product>> getProductsByCategoryId(@PathVariable String categoryId){
 	//	System.out.println("products by category id");
+		List<Product> categoryProducts=new ArrayList<>();
 		Category category=categoryService.fetchCategoryById(categoryId);
+		if(category==null) {
+			return new ResponseEntity<List<Product>>( categoryProducts, HttpStatus.NOT_FOUND);
+		}
 		String categoryTitle=category.getCategoryTitle().toLowerCase();
+		categoryProducts=productService.getAllProductsByCategory(categoryTitle);
 		System.out.println(productService.getAllProductsByCategory(categoryTitle));
-		return new ResponseEntity<List<Product>>(productService.getAllProductsByCategory(categoryTitle) , HttpStatus.OK);
+		
+		return new ResponseEntity<List<Product>>(categoryProducts , HttpStatus.OK);
 	}
 	
 	

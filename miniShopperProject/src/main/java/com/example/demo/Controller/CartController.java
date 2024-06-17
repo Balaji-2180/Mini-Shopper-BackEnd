@@ -21,7 +21,7 @@ import com.example.demo.dtos.CartDto;
 @Controller
 @RequestMapping("/carts")
 public class CartController {
-	
+	 
 	@Autowired
 	CartService cartService;
 	
@@ -29,6 +29,9 @@ public class CartController {
 	public ResponseEntity<CartDto> getCartByUserId(@PathVariable String userId){
 		//System.out.println("API call from Cart "+userId);
 	    CartDto userCart=cartService.fetCartbyUser(userId); 
+	    if(userCart==null) {
+			return new ResponseEntity<CartDto>(userCart,HttpStatus.NOT_FOUND);
+	    }
 		return new ResponseEntity<CartDto>(userCart,HttpStatus.OK);
 	}
 	
@@ -38,7 +41,11 @@ public class CartController {
 		
 	    CartDto c=cartService.addItemToCart(userId, item);
 	    
-	    System.out.println("in controller "+c.toString());
+//	    if(c==null) {
+//			return new ResponseEntity<CartDto>(c,HttpStatus.NOT_FOUND);
+//	    }
+	    
+	   // System.out.println("in controller "+c.toString());
 		return new ResponseEntity<CartDto>(c,HttpStatus.OK);
 	}
 	
@@ -47,6 +54,7 @@ public class CartController {
 	public void deleteItem(@PathVariable String userId, @PathVariable int itemId) {
 		System.out.println("in cart controller delete function ");
 		cartService.deleteItemFromCart(userId, itemId);
+		//return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
 	}
 	
 
