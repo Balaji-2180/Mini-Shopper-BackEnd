@@ -32,11 +32,11 @@ public class ProductServiceImpl implements ProductService{
 //		return productRepository.findByProductName(productName);
 //	}
 
-	@Override
-	public List<Product> getAllProductsByBrand(String brand) {
-		
-		return productRepository.findByBrand(brand);
-	}
+//	@Override
+//	public List<Product> getAllProductsByBrand(String brand) {
+//		
+//		return productRepository.findByBrand(brand);
+//	}
 
 	@Override
 	public List<Product> getAllProductsByCategory(String category) {

@@ -28,12 +28,6 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public List<User> getAllUser() {
-		// TODO Auto-generated method stub
-		return userRepository.findAll();
-	}
-
-	@Override
 	public User checkUserId(String userId) {
 		// TODO Auto-generated method stub
 		//User user=userRepository.findByUserId(userId);
@@ -51,12 +45,13 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public UserDto updateUser(String userId, UserDto userDto) {
 		// TODO Auto-generated method stub
+		System.out.println("in user service impl");
 		User user=userRepository.findByUserId(userId);
 		
 		user.setFirstName(userDto.getFirstName());
 		user.setLastName(userDto.getLastName());
 		user.setAddress(userDto.getAddress());
-		user.setStreet(userDto.getStreet());
+		user.setStreet(userDto.getStreet()); 
 		user.setCity(userDto.getCity());
 		user.setState(userDto.getState());
 		user.setPinCode(userDto.getPinCode());
@@ -67,6 +62,7 @@ public class UserServiceImpl implements UserService{
 		
 		return modelMapper.map(savedUser, UserDto.class);
 	}
-	
+
+
 
 }

@@ -66,8 +66,8 @@ public class CartServiceImpl implements CartService {
 		items= items.stream().map(i -> {
 			if(i.getProduct().getProductId().equals(productId)) {
 				//System.out.println("in stream of items");
-				i.setQuantity(quantity);
-				i.setTotalPrice((product.getDiscountedPrice() == 0) ? quantity * product.getUnitPrice()
+			        i.setQuantity(quantity);
+				    i.setTotalPrice((product.getDiscountedPrice() == 0) ? quantity * product.getUnitPrice()
 						: quantity * product.getDiscountedPrice());
 				updated.set(true);
 			}
@@ -104,7 +104,7 @@ public class CartServiceImpl implements CartService {
 	public void deleteItemFromCart(String userId, int cartItemId) {
 		// TODO Auto-generated method stub
 		CartItem cartItem=cartItemRepository.findByCartItemId(cartItemId);
-		cartItemRepository.delete(cartItem);
+		 cartItemRepository.delete(cartItem);
 		
 		
 	}
