@@ -12,7 +12,7 @@ public interface ProductService {
 
 //	public List<Product> getAllProductsByProductName(String productName);
 	
-	public List<Product> getAllProductsByBrand(String brand);
+//	public List<Product> getAllProductsByBrand(String brand);
 	
 	public List<Product> getAllProductsByCategory(String category);
 	

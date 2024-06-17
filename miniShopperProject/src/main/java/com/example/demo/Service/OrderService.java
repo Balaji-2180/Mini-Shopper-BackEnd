@@ -2,14 +2,14 @@ package com.example.demo.Service;
 
 import java.util.List;
 
-import com.example.demo.Entity.Orders;
+import com.example.demo.dtos.CreateOrderRequest;
+import com.example.demo.dtos.OrderDto;
 
 public interface OrderService {
+	OrderDto createOrder(CreateOrderRequest orderRequest);
 	
-	List<Orders> getAllPendingOrders();
+	List<OrderDto> fetchOrderByUser(String userId);
 	
-	List<Orders> getAllOrdersByUserId();
+	OrderDto fetchOrderByOrderId(String orderId);
 	
-	
-
 }
