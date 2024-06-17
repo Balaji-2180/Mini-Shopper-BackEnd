@@ -21,9 +21,13 @@ public class ProductDto {
 	private String	brand;
 
     private double	unitPrice;
+    
+    private double	discountedPrice;
 
 	private int	stock;
 
 	private String	category;
+	
+	private String	shortDescription;
 
 }
