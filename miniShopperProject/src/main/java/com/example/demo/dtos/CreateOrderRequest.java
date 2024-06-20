@@ -1,5 +1,8 @@
 package com.example.demo.dtos;
 
+import java.util.List;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +32,38 @@ public class CreateOrderRequest {
 	private String state;
 	
 	private String shippingPhone;
+	
+	private String productId;
+	
+	private int quantity;
+	
+	private List<ExcelOrder> products;
+
+	public CreateOrderRequest(String userId, String cartId, String orderStatus, String paymentStatus, String orderName,
+			String shippingAddress, String postalCode, String city, String state, String shippingPhone) {
+		super();
+		this.userId = userId;
+		this.cartId = cartId;
+		this.orderStatus = orderStatus;
+		this.paymentStatus = paymentStatus;
+		this.orderName = orderName;
+		this.shippingAddress = shippingAddress;
+		this.postalCode = postalCode;
+		this.city = city;
+		this.state = state;
+		this.shippingPhone = shippingPhone;
+	}
+
+	@Override
+	public String toString() {
+		return "CreateOrderRequest [userId=" + userId + ", cartId=" + cartId + ", orderStatus=" + orderStatus
+				+ ", paymentStatus=" + paymentStatus + ", orderName=" + orderName + ", shippingAddress="
+				+ shippingAddress + ", postalCode=" + postalCode + ", city=" + city + ", state=" + state
+				+ ", shippingPhone=" + shippingPhone + ", productId=" + productId + ", quantity=" + quantity
+				+ ", products=" + products + "]";
+	}
+	
+	
 	
 
 }
