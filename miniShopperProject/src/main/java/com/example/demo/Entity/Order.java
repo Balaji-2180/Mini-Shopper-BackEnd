@@ -82,6 +82,35 @@ public class Order {
 	
 	@OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems=new ArrayList<>();
+
+	public Order(String orderId, String orderNumber, String orderStatus, String paymentStatus, double orderAmount,
+			String orderName, String shippingAddress, String postalCode, String city, String state,
+			String shippingPhone, User user, LocalDate deliveredDate, Date createdAt) {
+		super();
+		this.orderId = orderId;
+		this.orderNumber = orderNumber;
+		this.orderStatus = orderStatus;
+		this.paymentStatus = paymentStatus;
+		this.orderAmount = orderAmount;
+		this.orderName = orderName;
+		this.shippingAddress = shippingAddress;
+		this.postalCode = postalCode;
+		this.city = city;
+		this.state = state;
+		this.shippingPhone = shippingPhone;
+		this.user = user;
+		this.deliveredDate = deliveredDate;
+		this.createdAt = createdAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Order [orderId=" + orderId + ", orderNumber=" + orderNumber + ", orderStatus=" + orderStatus
+				+ ", paymentStatus=" + paymentStatus + ", orderAmount=" + orderAmount + ", orderName=" + orderName
+				+ ", shippingAddress=" + shippingAddress + ", postalCode=" + postalCode + ", city=" + city + ", state="
+				+ state + ", shippingPhone=" + shippingPhone + ", user=" + user + ", deliveredDate=" + deliveredDate
+				+ ", createdAt=" + createdAt + ", orderItems=" + orderItems + "]";
+	}
 	
 	
 
