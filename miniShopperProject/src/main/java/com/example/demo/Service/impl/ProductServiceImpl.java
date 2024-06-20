@@ -44,17 +44,17 @@ public class ProductServiceImpl implements ProductService{
 		return productRepository.findByCategory(category);
 	}
 
-	@Override
-	public List<Product> getAllAvailableProduct() {
-		// TODO Auto-generated method stub
-		return productRepository.findAvailableProducts();
-	}
-
-	@Override
-	public void updateStock(String productId,int stock) {
-		// TODO Auto-generated method stub
-		productRepository.updateStock(productId,stock);
-	}
+//	@Override
+//	public List<Product> getAllAvailableProduct() {
+//		// TODO Auto-generated method stub
+//		return productRepository.findAvailableProducts();
+//	}
+//
+//	@Override
+//	public void updateStock(String productId,int stock) {
+//		// TODO Auto-generated method stub
+//		productRepository.updateStock(productId,stock);
+//	}
 	
 	
 
