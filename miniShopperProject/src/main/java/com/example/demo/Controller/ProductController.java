@@ -73,27 +73,27 @@ public class ProductController {
 	
 	
 	
-	@GetMapping("/listAvailableProducts")
-	public  ResponseEntity<List<Product>>  fetchAvailableProducts(){
-		//System.out.println("getting into all products"+productServiceImpl.getAllProducts());
-		return  new ResponseEntity<List<Product>>(productService.getAllAvailableProduct(),HttpStatus.OK); 
-	}
-	
-	
-	@PostMapping("/updateProduct")
-	public String reduceProductsCount() {
-		
-		String productId="PID1040";
-		int count=2;
-		Product updateProduct=productService.getByProductId(productId);
-		int updatedStock=(updateProduct.getStock()-count);
-		System.out.println("in update "+updateProduct.getStock());
-		productService.updateStock(productId,updatedStock);
-		
-		
-		
-		return "Updated";
-	}
+//	@GetMapping("/listAvailableProducts")
+//	public  ResponseEntity<List<Product>>  fetchAvailableProducts(){
+//		//System.out.println("getting into all products"+productServiceImpl.getAllProducts());
+//		return  new ResponseEntity<List<Product>>(productService.getAllAvailableProduct(),HttpStatus.OK); 
+//	}
+//	
+//	
+//	@PostMapping("/updateProduct")
+//	public String reduceProductsCount() {
+//		
+//		String productId="PID1040";
+//		int count=2;
+//		Product updateProduct=productService.getByProductId(productId);
+//		int updatedStock=(updateProduct.getStock()-count);
+//		System.out.println("in update "+updateProduct.getStock());
+//		productService.updateStock(productId,updatedStock);
+//		
+//		
+//		
+//		return "Updated";
+//	}
 	
 
 }
