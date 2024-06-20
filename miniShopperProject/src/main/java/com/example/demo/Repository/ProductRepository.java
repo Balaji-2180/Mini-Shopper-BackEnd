@@ -15,7 +15,8 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	
 	Product findByProductId(String productId);
 	
-	List<Product> findByProductName(String productName);
+	@Query("select p from product p where trim(upper(p.productName)) = :productName")
+	Product findByProductName(@Param("productName") String productName);
 	
 	List<Product> findByBrand(String brand);
 	
