@@ -26,7 +26,7 @@ public class Cart {
 	@Id
 	private String cartId;
 	
-	@OneToOne
+	@OneToOne	
 	@JoinColumn(name="user_id")
 	private User user;
 	
