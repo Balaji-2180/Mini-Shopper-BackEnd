@@ -174,13 +174,15 @@ public class OrderServiceImpl implements OrderService{
 		
 		for(ExcelOrder requestedProduct : requestedProducts) {
 //			System.out.println( requestedProduct.getQuantity());
+			if(requestedProduct.getQuantity() > 0 ){
+				
 			
-			int requestedQuantity=Integer.parseInt(requestedProduct.getQuantity());
+			int requestedQuantity=requestedProduct.getQuantity();//Integer.parseInt(requestedProduct.getQuantity());
 			
-			Product product = productRepository.findByProductName(requestedProduct.getProductName().trim().toUpperCase());
+			Product product = productRepository.findByProductId(requestedProduct.getProductId());
 					//.orElseThrow(() -> new ResourceNotFoundException("Product Not Found"));
 			
-			System.out.println("in order service impl  "+product);
+			//System.out.println("in order service impl  "+product);
 			
 			if(product==null) {
 				throw new ResourceNotFoundException("Product Not Found");
@@ -196,9 +198,11 @@ public class OrderServiceImpl implements OrderService{
 						.order(order).build();
 				orderable.add(orderItem);
 				totalPrice+=orderItem.getTotalPrice();				
+				System.out.println("order item "+orderItem);
 		    }
+			}
 		}
-		System.out.println("after iteration "+orderable+"  "+totalPrice);
+		System.out.println("after iteration "+orderable.toString() +"  "+totalPrice);
 		
 		
 		
