@@ -2,6 +2,8 @@ package com.example.demo.Service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.demo.Entity.Product;
 
 public interface ProductService {
@@ -16,9 +18,11 @@ public interface ProductService {
 	
 	public List<Product> getAllProductsByCategory(String category);
 	
-//	public List<Product> getAllAvailableProduct();
+	public List<Product> getAllAvailableProduct();
 //	
 //	public void updateStock(String productId,int stock);
+	
+	public Product saveImage(MultipartFile image);
 	
 
 }
