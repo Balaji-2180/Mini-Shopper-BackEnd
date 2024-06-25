@@ -3,6 +3,8 @@ package com.example.demo.dtos;
 import java.util.List;
 import java.util.Map;
 
+import com.example.demo.Entity.Product;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

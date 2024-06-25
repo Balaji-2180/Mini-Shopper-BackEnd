@@ -10,12 +10,31 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExcelOrder {
-	private String productName;
-	private String quantity;
+private String productId;
+	
+	private String	productName;
+
+	private String	brand;
+
+    private double	unitPrice;
+    
+    private double	discountedPrice;
+
+	private int	stock;
+
+	private String	category;
+	
+	private String	shortDescription;
+	
+	private int quantity;
+
 	@Override
 	public String toString() {
-		return "ExcelOrder [productName=" + productName + ", quantity=" + quantity + "]";
+		return "ExcelOrder [productId=" + productId + ", productName=" + productName + ", brand=" + brand
+				+ ", unitPrice=" + unitPrice + ", discountedPrice=" + discountedPrice + ", stock=" + stock
+				+ ", category=" + category + ", shortDescription=" + shortDescription + ", quantity=" + quantity + "]";
 	}
+	
 	
 
 
