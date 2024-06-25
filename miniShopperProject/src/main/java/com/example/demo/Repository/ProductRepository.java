@@ -22,7 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	
 	List<Product> findByCategory(String category);
 	
-	@Query("select p from product p where p.stock=0")
+	@Query("select p from product p where p.stock!=0")
 	List<Product> findAvailableProducts();
 	
 	@Transactional
@@ -30,8 +30,11 @@ public interface ProductRepository extends JpaRepository<Product, String>{
 	@Query("update product p set p.stock=:value where p.productId=:productId")
 	void updateStock(@Param("productId") String productId,@Param("value") int stock);
 	
-	
-	
+//	
+//	@Transactional
+//	@Modifying
+//	@Query("update product p set p.image=:img where p.productId:productId")
+//	Product addImage(@Param("img") String image,@Param("productId") String productId);
 	
 	
 
