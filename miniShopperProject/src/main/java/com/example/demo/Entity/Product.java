@@ -1,8 +1,11 @@
 package com.example.demo.Entity;
 
+import java.util.Arrays;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +16,7 @@ import lombok.Setter;
 
 @Entity(name ="product")
 @Table(name="product")
+@AllArgsConstructor
 public class Product {
 	
 	@Id
@@ -37,8 +41,19 @@ public class Product {
 	@Column(name="category", length=100, nullable=false)
 	private String	category;
 	
-	@Column(name="shortDescription", length=100, nullable=false)
+	@Column(name="shortDescription", length=1000, nullable=false)
 	private String	shortDescription;
+	
+//	@Lob
+//	@Column(columnDefinition = "longblob")
+//	private byte[] image;
+//	
+	
+	@Column(columnDefinition = "longtext")
+	private String image;
+	
+	
+
 
 	public double getDiscountedPrice() {
 		return discountedPrice;
@@ -122,13 +137,32 @@ public class Product {
 		this.discountedPrice = discountedPrice;
 	}
 
+	
+
+//	public byte[] getImage() {
+//		return image;
+//	}
+//
+//	public void setImage(byte[] image) {
+//		this.image = image;
+//	}
+
 	@Override
 	public String toString() {
 		return "Product [productId=" + productId + ", productName=" + productName + ", brand=" + brand + ", unitPrice="
 				+ unitPrice + ", discountedPrice=" + discountedPrice + ", stock=" + stock + ", category=" + category
-				+ ", shortDescription=" + shortDescription + "]";
+				+ ", shortDescription=" + shortDescription + ", image=" + image + "]";
 	}
 
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	
 	
 	
 	
