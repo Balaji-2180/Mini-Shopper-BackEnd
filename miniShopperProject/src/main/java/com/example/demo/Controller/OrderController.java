@@ -124,37 +124,44 @@ public class OrderController {
 	@GetMapping("/excel")
 	public  ResponseEntity<List<Product>>  fetchAllProductsForExcel(){
 		System.out.println("in all products excel");
-		return  new ResponseEntity<List<Product>>(productService.getAllProducts(),HttpStatus.OK); 
+		List<Product> availableProducts=productService.getAllAvailableProduct();
+		return  new ResponseEntity<List<Product>>(availableProducts,HttpStatus.OK); 
 		
 	}
 	
 	
 	   
 	@PostMapping("/excel")
-	public ResponseEntity<String> readExcelData(@RequestBody CreateOrderRequest orderRequest)  throws  ResourceNotFoundException{
+	public ResponseEntity<OrderDto> readExcelData(@RequestBody CreateOrderRequest orderRequest)  throws  ResourceNotFoundException{
 
-//		System.out.println("in excel order controller");
+		System.out.println("in excel order controller");
 			
 			int totalNumberOfProducts=0;
 			
-			List<ExcelOrder> products =  new ArrayList<>();
+			List<ExcelOrder> products = orderRequest.getProducts();
 			
-			for(ExcelOrder e:orderRequest.getProducts()) {
-				totalNumberOfProducts+=Integer.parseInt(e.getQuantity());
+			for(ExcelOrder p:products) {
+				
+				if(p.getQuantity()>0) {
+				
+					totalNumberOfProducts+=p.getQuantity();
+//					System.out.println(totalNumberOfProducts);
+				}
+				
 			}
 
-            
+			OrderDto savedOrder = new OrderDto();
  
 			if(totalNumberOfProducts>50) {
 				throw  new ResourceNotFoundException("you cannot order more than 50 items in one order");
 //				return new ResponseEntity<>("Uploaded Excel sheet contains more than 50 items",HttpStatus.OK);
 			}else {
-				orderService.createOrderByExcelSheet(orderRequest);
+				 savedOrder=orderService.createOrderByExcelSheet(orderRequest);
 			}
 		
 		
 		
-		return new ResponseEntity<>("Order Placed successfully",HttpStatus.OK);
+		return new ResponseEntity<OrderDto>(savedOrder,HttpStatus.OK);
 		
 //		for(;(row = sheet.getRow(i))!=null;i++) {
 //		System.out.println("product  "+row.getCell(0).getStringCellValue());

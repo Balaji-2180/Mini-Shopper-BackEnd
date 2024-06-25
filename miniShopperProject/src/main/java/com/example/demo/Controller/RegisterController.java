@@ -18,14 +18,14 @@ import com.example.demo.Service.impl.UserServiceImpl;
 
 @CrossOrigin(origins = "*")
 @Controller
-@RequestMapping("/users/")
+@RequestMapping("/users")
 public class RegisterController {
     
     @Autowired
     UserService userService; 
 
 
-	@PostMapping("newUser") 
+	@PostMapping("/newUser") 
 	public ResponseEntity<RegisterResponse> saveUser(@RequestBody User u) {		
 		RegisterResponse rr=new RegisterResponse();
 		//u.setUserId(null);
