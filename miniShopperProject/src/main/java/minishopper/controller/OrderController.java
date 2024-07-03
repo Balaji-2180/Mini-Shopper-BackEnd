@@ -1,9 +1,10 @@
-package com.example.demo.Controller;
+package minishopper.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,160 +28,129 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.Entity.OrderItem;
-import com.example.demo.Entity.Product;
-import com.example.demo.Response.RegisterResponse;
-import com.example.demo.Service.OrderService;
-import com.example.demo.Service.ProductService;
-import com.example.demo.dtos.CreateOrderRequest;
-import com.example.demo.dtos.ExcelOrder;
-import com.example.demo.dtos.OrderDto;
-import com.example.demo.dtos.OrderItemDto;
-import com.example.demo.dtos.UpdateOrderItem;
-import com.example.demo.exception.ResourceNotFoundException;
+import minishopper.dto.ChangeOrderStatus;
+import minishopper.dto.CreateOrderRequestDto;
+import minishopper.dto.ExcelOrderDto;
+import minishopper.dto.OrderDto;
+import minishopper.dto.OrderItemDto;
+import minishopper.dto.UpdateOrderItemDto;
+import minishopper.entity.OrderItem;
+import minishopper.entity.Product;
+import minishopper.exception.ResourceNotFoundException;
+import minishopper.response.RegisterResponse;
+import minishopper.service.OrderService;
+import minishopper.service.ProductService;
 
 @CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
-	
+
 	@Autowired
 	OrderService orderService;
-	
+
 	@Autowired
 	ProductService productService;
-	
-	@PostMapping()
-	public ResponseEntity<OrderDto> createOrder(@RequestBody CreateOrderRequest orderRequest){
-//		System.out.println("in order Controller"+orderRequest.getCartId()+"  "+orderRequest.getCity()+"  "+
-//	orderRequest.getOrderName()+"  "+ orderRequest.getOrderStatus()+"  "+orderRequest.getPaymentStatus()+"  "+
-//				orderRequest.getPostalCode()+"  "+orderRequest.getShippingAddress()+"  "+
-//				orderRequest.getShippingPhone()+"  "+orderRequest.getState()+"  "+orderRequest.getUserId());
-		OrderDto ordered=orderService.createOrder(orderRequest); 
-		System.out.println("in create order in controller");
 
-		return new ResponseEntity<OrderDto>(ordered,HttpStatus.OK);
-		
+	@PostMapping()
+	public ResponseEntity<OrderDto> createOrder(@RequestBody CreateOrderRequestDto orderRequest) {
+		OrderDto ordered = orderService.createOrder(orderRequest);
+		System.out.println(orderRequest.toString());
+		return new ResponseEntity<OrderDto>(ordered, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/singleProduct")
-	public ResponseEntity<OrderDto> createOrderForSingleProduct(@RequestBody CreateOrderRequest orderRequest){
-		System.out.println("in order Controller"+orderRequest.getCartId()+"  "+orderRequest.getCity()+"  "+
-	orderRequest.getOrderName()+"  "+ orderRequest.getOrderStatus()+"  "+orderRequest.getPaymentStatus()+"  "+
-				orderRequest.getPostalCode()+"  "+orderRequest.getShippingAddress()+"  "+
-				orderRequest.getShippingPhone()+"  "+orderRequest.getState()+"  "+orderRequest.getUserId());
-		
-		OrderDto ordered=orderService.createOrderSingleProduct(orderRequest); 
-		
-		return new ResponseEntity<OrderDto>(ordered ,HttpStatus.OK);
-	} 
-	
+	public ResponseEntity<OrderDto> createOrderForSingleProduct(@RequestBody CreateOrderRequestDto orderRequest) {
+		OrderDto ordered = orderService.createOrderSingleProduct(orderRequest);
+		return new ResponseEntity<OrderDto>(ordered, HttpStatus.OK);
+	}
+
 	@PostMapping("/updateOrderItem")
-	public ResponseEntity<OrderDto> updateItemInOrdere(@RequestBody UpdateOrderItem updateOrderItem){
-		System.out.println("now working method "+updateOrderItem.getOrderItemId()+"  "+updateOrderItem.getQuantity());
-		
-		
-		OrderItemDto updated=orderService.updateOrderItem(updateOrderItem);
-		
-		
-		return new ResponseEntity<OrderDto>(new OrderDto() ,HttpStatus.OK);
+	public ResponseEntity<OrderDto> updateItemInOrdere(@RequestBody UpdateOrderItemDto updateOrderItem) {
+		OrderItemDto updated = orderService.updateOrderItem(updateOrderItem);
+		return new ResponseEntity<OrderDto>(new OrderDto(), HttpStatus.OK);
 	}
-	
-	
-	
+
 	@GetMapping("/user/{userId}")
-	public  ResponseEntity<List<OrderDto>> getOrderByUserId(@PathVariable String userId){
-		System.out.println("in order controller get order  ");
-		List<OrderDto> orders=orderService.fetchOrderByUser(userId);
-		
-		if(orders==null) {
-			return new ResponseEntity<List<OrderDto>>(orders,HttpStatus.NOT_FOUND);
-		} 
-		
-		
-		return new ResponseEntity<List<OrderDto>>(orders,HttpStatus.OK);
-	}
-	
-	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderDto> getOrderByOrderId(@PathVariable String orderId){
-		
-		System.out.println("in order controller get order by order id");
-		OrderDto order=orderService.fetchOrderByOrderId(orderId);
-		if(order==null) {
-			return new ResponseEntity<OrderDto>(order,HttpStatus.NOT_FOUND);
+	public ResponseEntity<List<OrderDto>> getOrderByUserId(@PathVariable String userId) {
+		List<OrderDto> orders = orderService.fetchOrderByUser(userId);
+		if (orders == null) {
+			return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<OrderDto>(order,HttpStatus.OK);
+		return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.OK);
 	}
-	 
-	
+
+	@GetMapping("/{orderId}")
+	public ResponseEntity<OrderDto> getOrderByOrderId(@PathVariable String orderId) {
+		OrderDto order = orderService.fetchOrderByOrderId(orderId);
+		if (order == null) {
+			return new ResponseEntity<OrderDto>(order, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<OrderDto>(order, HttpStatus.OK);
+	}
+
 	@DeleteMapping("/item/{orderItemId}")
 	public ResponseEntity<String> deleteItem(@PathVariable int orderItemId) {
-		System.out.println("in cart controller delete function "+"  "+orderItemId);
-		OrderItem orderItem= orderService.removeOrderItemByOrderItemId(orderItemId);
+		OrderItem orderItem = orderService.removeOrderItemByOrderItemId(orderItemId);
 		orderService.updateTotalPrice(orderItem);
-		return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
+		return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/excel")
-	public  ResponseEntity<List<Product>>  fetchAllProductsForExcel(){
+	public ResponseEntity<List<Product>> fetchAllProductsForExcel() {
 		System.out.println("in all products excel");
-		List<Product> availableProducts=productService.getAllAvailableProduct();
-		return  new ResponseEntity<List<Product>>(availableProducts,HttpStatus.OK); 
-		
+		List<Product> availableProducts = productService.getAllAvailableProduct();
+		return new ResponseEntity<List<Product>>(availableProducts, HttpStatus.OK);
+	}
+
+	@PostMapping("/excel")
+	public ResponseEntity<OrderDto> orderExcelData(@RequestBody CreateOrderRequestDto orderRequest)
+			throws ResourceNotFoundException {
+		int totalNumberOfProducts = 0;
+		List<ExcelOrderDto> products = orderRequest.getProducts();
+		for (ExcelOrderDto p : products) {
+			if (p.getQuantity() > 0) { 
+				totalNumberOfProducts += p.getQuantity();
+			}
+		}
+		OrderDto savedOrder = new OrderDto();
+		if (totalNumberOfProducts > 50) {
+			throw new ResourceNotFoundException("you cannot order more than 50 items in one order");
+		} else {
+			savedOrder = orderService.createOrderByExcelSheet(orderRequest);
+		}
+		return new ResponseEntity<OrderDto>(savedOrder, HttpStatus.OK);
 	}
 	
 	
-	   
-	@PostMapping("/excel")
-	public ResponseEntity<OrderDto> readExcelData(@RequestBody CreateOrderRequest orderRequest)  throws  ResourceNotFoundException{
-
-		System.out.println("in excel order controller");
-			
-			int totalNumberOfProducts=0;
-			
-			List<ExcelOrder> products = orderRequest.getProducts();
-			
-			for(ExcelOrder p:products) {
-				
-				if(p.getQuantity()>0) {
-				
-					totalNumberOfProducts+=p.getQuantity();
-//					System.out.println(totalNumberOfProducts);
-				}
-				
-			}
-
-			OrderDto savedOrder = new OrderDto();
- 
-			if(totalNumberOfProducts>50) {
-				throw  new ResourceNotFoundException("you cannot order more than 50 items in one order");
-//				return new ResponseEntity<>("Uploaded Excel sheet contains more than 50 items",HttpStatus.OK);
-			}else {
-				 savedOrder=orderService.createOrderByExcelSheet(orderRequest);
-			}
+	@PostMapping("/getAllOrders")
+	public ResponseEntity<List<OrderDto>> getAllOrdersForShopkeeper(){
+		List<OrderDto> orders = orderService.fetchAllOrders();
+		System.out.println(orders);
+		if(orders.size()>0){
+			return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.OK);
+		}
+		return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.NO_CONTENT);
+	}
+	
+	
+	@PostMapping("/changeOrderStatus")
+	public ResponseEntity<OrderDto> changeOrderStatus(@RequestBody ChangeOrderStatus changeOrderStatus){
+		System.out.println("in chage status controller");
+		System.out.println(changeOrderStatus.toString());
+		LocalDate localDate = LocalDate.parse(changeOrderStatus.getExpectedDeliveryDate());
+		System.out.println(localDate);
+//		OrderDto updatedOrder = 
+//		ChangeOrderStatus changeOrderStatus=new ChangeOrderStatus();
+//		changeOrderStatus.setOrderId("3a9ab3bf-4748-488a-af95-56c4132b307a");
+//		changeOrderStatus.setOrderStatus("SENT FOR MODIFICATION");
+//		changeOrderStatus.setReason("why you need reason");	
+		orderService.updateOrderStatus(changeOrderStatus);
 		
+		OrderDto updatedOrder = orderService.fetchOrderByOrderId(changeOrderStatus.getOrderId());
 		
-		
-		return new ResponseEntity<OrderDto>(savedOrder,HttpStatus.OK);
-		
-//		for(;(row = sheet.getRow(i))!=null;i++) {
-//		System.out.println("product  "+row.getCell(0).getStringCellValue());
-//		
-//		
-//		System.out.println("quantity  "+row.getCell(1).getNumericCellValue());
-//		
-//		String productName=row.getCell(0).getStringCellValue();
-//		int quantity= (int) row.getCell(1).getNumericCellValue();
-//		
-//		products.add(new ExcelOrder(productName,quantity));
-//		
-//		totalNumberOfProducts += quantity;
-//	}
-//    orderRequest.setProducts(products);
-		
-		
-		
-		
+		//System.out.println(updatedOrder);
+		return new ResponseEntity<OrderDto>(updatedOrder, HttpStatus.OK);
 	}
 	
 	
