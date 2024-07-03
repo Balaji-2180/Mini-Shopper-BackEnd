@@ -1,5 +1,7 @@
-package com.example.demo.Service.impl;
+package minishopper.serviceimpl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,31 +14,32 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.Entity.Cart;
-import com.example.demo.Entity.CartItem;
-import com.example.demo.Entity.Order;
-import com.example.demo.Entity.OrderItem;
-import com.example.demo.Entity.Product;
-import com.example.demo.Entity.User;
-import com.example.demo.Repository.CartRepository;
-import com.example.demo.Repository.OrderItemRepository;
-import com.example.demo.Repository.OrderRepository;
-import com.example.demo.Repository.ProductRepository;
-import com.example.demo.Repository.UserRepository;
-import com.example.demo.Service.OrderService;
-import com.example.demo.dtos.CreateOrderRequest;
-import com.example.demo.dtos.ExcelOrder;
-import com.example.demo.dtos.OrderDto;
-import com.example.demo.dtos.OrderItemDto;
-import com.example.demo.dtos.UpdateOrderItem;
-import com.example.demo.exception.ResourceNotFoundException;
+import minishopper.dto.ChangeOrderStatus;
+import minishopper.dto.CreateOrderRequestDto;
+import minishopper.dto.ExcelOrderDto;
+import minishopper.dto.OrderDto;
+import minishopper.dto.OrderItemDto;
+import minishopper.dto.UpdateOrderItemDto;
+import minishopper.entity.Cart;
+import minishopper.entity.CartItem;
+import minishopper.entity.Order;
+import minishopper.entity.OrderItem;
+import minishopper.entity.Product;
+import minishopper.entity.User;
+import minishopper.exception.ResourceNotFoundException;
+import minishopper.repository.CartRepository;
+import minishopper.repository.OrderItemRepository;
+import minishopper.repository.OrderRepository;
+import minishopper.repository.ProductRepository;
+import minishopper.repository.UserRepository;
+import minishopper.service.OrderService;
 
 @Service
-public class OrderServiceImpl implements OrderService{
-	
+public class OrderServiceImpl implements OrderService {
+
 	@Autowired
 	OrderRepository orderRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -45,33 +48,40 @@ public class OrderServiceImpl implements OrderService{
 
 	@Autowired
 	private ProductRepository productRepository;
-	
-	@Autowired	
+
+	@Autowired
 	OrderItemRepository orderItemRepository;
 
 	@Autowired
 	private ModelMapper modelMapper;
 
 	@Override
-	public OrderDto createOrder(CreateOrderRequest orderRequest) {
+	public OrderDto createOrder(CreateOrderRequestDto orderRequest) {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(orderRequest.getUserId());
-		
-		Cart cart =  cartRepository.findByCartId(orderRequest.getCartId());
-				 
+
+		Cart cart = cartRepository.findByCartId(orderRequest.getCartId());
+
 		List<CartItem> cartItems = cart.getItems();
-		
-		
-		String orderId = UUID.randomUUID().toString();
-		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
+
+//		String orderId = UUID.randomUUID().toString()
+		LocalDateTime localDateTime = LocalDateTime.now();
+
+		String firstHalf = "" + localDateTime.getDayOfMonth() + localDateTime.getMonthValue() + localDateTime.getYear()
+				+ "-" + localDateTime.getHour() + localDateTime.getMinute();
+
+		String orderId = firstHalf + "-" + System.currentTimeMillis() / 1000L;
+
+		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
+//		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
 		AtomicReference<Double> totalOrderAmount = new AtomicReference<Double>((double) 0);
-		
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName())
-				.shippingPhone(orderRequest.getShippingPhone()).orderStatus(orderRequest.getOrderStatus())
-				.paymentStatus(orderRequest.getPaymentStatus()).shippingAddress(orderRequest.getShippingAddress())
-				.city(orderRequest.getCity()).state(orderRequest.getState())
-				.postalCode(orderRequest.getPostalCode()).user(user).build(); 
-		
+
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).firstName(orderRequest.getFirstName())
+				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
+				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
+				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
+				.state(orderRequest.getState()).pinCode(orderRequest.getPinCode()).user(user).build();
+
 		List<OrderItem> orderItems = new ArrayList<>();
 		for (CartItem cartItem : cartItems) {
 			Product product = cartItem.getProduct();
@@ -81,225 +91,230 @@ public class OrderServiceImpl implements OrderService{
 			if (requestedQuantity > availableStock) {
 				continue;
 			}
-
-			
 			OrderItem orderItem = OrderItem.builder().quantity(requestedQuantity).product(product)
 					.totalPrice(requestedQuantity * (product.getDiscountedPrice() != 0 ? product.getDiscountedPrice()
 							: product.getUnitPrice()))
 					.order(order).build();
 
 			totalOrderAmount.set(totalOrderAmount.get() + orderItem.getTotalPrice());
-             System.out.println("total order Amount "+totalOrderAmount.get());
-	
+
 			product.setStock(availableStock - requestedQuantity);
 			productRepository.save(product);
-
 			orderItems.add(orderItem);
 		}
 		order.setOrderItems(orderItems);
-		
-//		System.out.println("order items in service impl "+order.getOrderItems());
 		order.setOrderAmount(totalOrderAmount.get());
-	
+		System.out.println();
 		Order savedOrder = orderRepository.save(order);
-
+		// System.out.println("saved order "+savedOrder);
 		cart.getItems().clear();
 		cartRepository.save(cart);
-		
-		return modelMapper.map(savedOrder, OrderDto.class);	
+
+		return modelMapper.map(savedOrder, OrderDto.class);
 	}
-	
-	
-	
+
 	@Override
-	public OrderDto createOrderSingleProduct(CreateOrderRequest orderRequest) {
+	public OrderDto createOrderSingleProduct(CreateOrderRequestDto orderRequest) {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(orderRequest.getUserId());
-		
-		Product product=productRepository.findByProductId(orderRequest.getProductId());
-		
-		String orderId = UUID.randomUUID().toString();
-		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
-		
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName())
-				.shippingPhone(orderRequest.getShippingPhone()).orderStatus(orderRequest.getOrderStatus())
-				.paymentStatus(orderRequest.getPaymentStatus()).shippingAddress(orderRequest.getShippingAddress())
-				.city(orderRequest.getCity()).state(orderRequest.getState())
-				.postalCode(orderRequest.getPostalCode()).user(user).build();
-		
-		
+
+		Product product = productRepository.findByProductId(orderRequest.getProductId());
+
+//		String orderId = UUID.randomUUID().toString();
+//		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
+		LocalDateTime localDateTime = LocalDateTime.now();
+
+		String firstHalf = "" + localDateTime.getDayOfMonth() + localDateTime.getMonthValue() + localDateTime.getYear()
+				+ "-" + localDateTime.getHour() + localDateTime.getMinute();
+
+		String orderId = firstHalf + "-" + System.currentTimeMillis() / 1000L;
+
+		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
+
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).firstName(orderRequest.getFirstName())
+				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
+				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
+				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
+				.state(orderRequest.getState()).pinCode(orderRequest.getPinCode()).user(user).build();
+
 		List<OrderItem> orderItems = new ArrayList<>();
-		
+
 		OrderItem orderItem = OrderItem.builder().quantity(orderRequest.getQuantity()).product(product)
-				.totalPrice(orderRequest.getQuantity() * (product.getDiscountedPrice() != 0 ? product.getDiscountedPrice()
-						: product.getUnitPrice()))
+				.totalPrice(orderRequest.getQuantity()
+						* (product.getDiscountedPrice() != 0 ? product.getDiscountedPrice() : product.getUnitPrice()))
 				.order(order).build();
 		orderItems.add(orderItem);
-		
+
 		order.setOrderItems(orderItems);
 		order.setOrderAmount(orderItems.get(0).getTotalPrice());
-		
+
 		Order savedOrder = orderRepository.save(order);
-		
-		
+
+		product.setStock(product.getStock() - orderRequest.getQuantity());
+		productRepository.save(product);
+
 		return modelMapper.map(savedOrder, OrderDto.class);
 	}
-	
+
 	@Override
-	public OrderDto createOrderByExcelSheet(CreateOrderRequest orderRequest) throws ResourceNotFoundException{
+	public OrderDto createOrderByExcelSheet(CreateOrderRequestDto orderRequest) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(orderRequest.getUserId());
-		
 
-		
-		List<ExcelOrder> requestedProducts = orderRequest.getProducts();
-		
-		List<Product> products=new ArrayList<>();
-		
-		List<OrderItem> orderable=new ArrayList<>();
-		
-		
+		List<ExcelOrderDto> requestedProducts = orderRequest.getProducts();
 
-		String orderId = UUID.randomUUID().toString();
-		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
-		
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName())
-				.shippingPhone(orderRequest.getShippingPhone()).orderStatus(orderRequest.getOrderStatus())
-				.paymentStatus(orderRequest.getPaymentStatus()).shippingAddress(orderRequest.getShippingAddress())
-				.city(orderRequest.getCity()).state(orderRequest.getState())
-				.postalCode(orderRequest.getPostalCode()).user(user).build();
-		
-		
-		double totalPrice=0;
-		
-		for(ExcelOrder requestedProduct : requestedProducts) {
-//			System.out.println( requestedProduct.getQuantity());
-			if(requestedProduct.getQuantity() > 0 ){
-				
-			
-			int requestedQuantity=requestedProduct.getQuantity();//Integer.parseInt(requestedProduct.getQuantity());
-			
-			Product product = productRepository.findByProductId(requestedProduct.getProductId());
-					//.orElseThrow(() -> new ResourceNotFoundException("Product Not Found"));
-			
-			//System.out.println("in order service impl  "+product);
-			
-			if(product==null) {
-				throw new ResourceNotFoundException("Product Not Found");
-			}else {
-				if(product.getStock() < requestedQuantity){
-					//return null;  //return out of stock
-					throw new ResourceNotFoundException("Product is out of stock");
+		List<Product> products = new ArrayList<>();
+
+		List<OrderItem> orderable = new ArrayList<>();
+
+//		String orderId = UUID.randomUUID().toString();
+//		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
+
+		LocalDateTime localDateTime = LocalDateTime.now();
+
+		String firstHalf = "" + localDateTime.getDayOfMonth() + localDateTime.getMonthValue() + localDateTime.getYear()
+				+ "-" + localDateTime.getHour() + localDateTime.getMinute();
+
+		String orderId = firstHalf + "-" + System.currentTimeMillis() / 1000L;
+
+		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
+
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).firstName(orderRequest.getFirstName())
+				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
+				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
+				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
+				.state(orderRequest.getState()).pinCode(orderRequest.getPinCode()).user(user).build();
+
+		double totalPrice = 0;
+
+		for (ExcelOrderDto requestedProduct : requestedProducts) {
+			if (requestedProduct.getQuantity() > 0) {
+				int requestedQuantity = requestedProduct.getQuantity();
+
+				Product product = productRepository.findByProductId(requestedProduct.getProductId());
+
+				if (product == null) {
+					throw new ResourceNotFoundException("Product Not Found");
+				} else {
+					if (product.getStock() < requestedQuantity) {
+						// return null; //return out of stock
+						throw new ResourceNotFoundException("Product is out of stock");
+					}
+					products.add(product);
+					OrderItem orderItem = OrderItem.builder().quantity(requestedQuantity).product(product)
+							.totalPrice(requestedQuantity
+									* (product.getDiscountedPrice() != 0 ? product.getDiscountedPrice()
+											: product.getUnitPrice()))
+							.order(order).build();
+					orderable.add(orderItem);
+					totalPrice += orderItem.getTotalPrice();
+					product.setStock(product.getStock() - requestedQuantity);
+					productRepository.save(product);
 				}
-				products.add(product);		
-				OrderItem orderItem = OrderItem.builder().quantity(requestedQuantity).product(product)
-						.totalPrice(requestedQuantity * (product.getDiscountedPrice() != 0 ? product.getDiscountedPrice()
-								: product.getUnitPrice()))
-						.order(order).build();
-				orderable.add(orderItem);
-				totalPrice+=orderItem.getTotalPrice();				
-				System.out.println("order item "+orderItem);
-		    }
 			}
 		}
-		System.out.println("after iteration "+orderable.toString() +"  "+totalPrice);
-		
-		
-		
 		order.setOrderItems(orderable);
 		order.setOrderAmount(totalPrice);
-		
-		System.out.println(order.toString());
-		
 		Order savedOrder = orderRepository.save(order);
-		
+
 		return modelMapper.map(savedOrder, OrderDto.class);
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public List<OrderDto> fetchOrderByUser(String userId){
-		User user=userRepository.findByUserId(userId);
-		List<Order> orders=orderRepository.findByUser(user);
+	public List<OrderDto> fetchOrderByUser(String userId) {
+		User user = userRepository.findByUserId(userId);
+		List<Order> orders = orderRepository.findByUser(user);
 		List<OrderDto> orderDto = orders.stream().map(order -> modelMapper.map(order, OrderDto.class))
 				.collect(Collectors.toList());
 		return orderDto;
 	}
-	
-	
+
 	public OrderDto fetchOrderByOrderId(String orderId) {
-		
-		Order order=orderRepository.findOrderByOrderId(orderId);	
-		//System.out.println("order items in serivce impl "+order.getOrderItems());
+		Order order = orderRepository.findOrderByOrderId(orderId);
 		return modelMapper.map(order, OrderDto.class);
-		
 	}
-
-
 
 	@Override
 	public OrderItem removeOrderItemByOrderItemId(int orderItemId) {
 		// TODO Auto-generated method stub
-		OrderItem deletedItem=orderItemRepository.findById(orderItemId);
-		
+		OrderItem deletedItem = orderItemRepository.findById(orderItemId);
 		orderItemRepository.deleteById(orderItemId);
-		
 		return deletedItem;
 	}
-
-
 
 	@Override
 	public void updateTotalPrice(OrderItem orderItem) {
 		// TODO Auto-generated method stub
-		Order order=orderRepository.findOrderByOrderId(orderItem.getOrder().getOrderId());
-		order.setOrderAmount(order.getOrderAmount()-orderItem.getTotalPrice());
-		System.out.println("updated order amount "+order.getOrderAmount());
-		if(order.getOrderAmount()<1) {
+		Order order = orderRepository.findOrderByOrderId(orderItem.getOrder().getOrderId());
+		order.setOrderAmount(order.getOrderAmount() - orderItem.getTotalPrice());
+		if (order.getOrderAmount() < 1) {
 			orderRepository.deleteById(order.getOrderId());
 		}
-		Order updated=orderRepository.save(order);
-//		System.out.println(updated.getOrderAmount());
+		Order updated = orderRepository.save(order);
 	}
 
-
-
 	@Override
-	public OrderItemDto updateOrderItem(UpdateOrderItem updateOrderItem) {
+	public OrderItemDto updateOrderItem(UpdateOrderItemDto updateOrderItem) {
 		// TODO Auto-generated method stub
-		int quantity=updateOrderItem.getQuantity();
+		int quantity = updateOrderItem.getQuantity();
 		OrderItem orderItem = orderItemRepository.findById(updateOrderItem.getOrderItemId());
-		
+
 		orderItem.setQuantity(quantity);
 		Product product = productRepository.findByProductId(updateOrderItem.getProductId());
-		
-		double priceToReduce=orderItem.getTotalPrice();
-		
-		orderItem.setTotalPrice(quantity * (product.getDiscountedPrice() != 0 ? product.getDiscountedPrice()
-				: product.getUnitPrice()));
-		OrderItem updatedOrderItem=orderItemRepository.save(orderItem);
-		
-		Order notUpdatedOrder=orderRepository.findOrderByOrderId(updatedOrderItem.getOrder().getOrderId());
-		
-		notUpdatedOrder.setOrderAmount((notUpdatedOrder.getOrderAmount()-priceToReduce)+updatedOrderItem.getTotalPrice());
-		
-		Order updatedOrder=orderRepository.save(notUpdatedOrder);
+
+		double priceToReduce = orderItem.getTotalPrice();
+
+		orderItem.setTotalPrice(
+				quantity * (product.getDiscountedPrice() != 0 ? product.getDiscountedPrice() : product.getUnitPrice()));
+		OrderItem updatedOrderItem = orderItemRepository.save(orderItem);
+
+		Order notUpdatedOrder = orderRepository.findOrderByOrderId(updatedOrderItem.getOrder().getOrderId());
+
+		notUpdatedOrder
+				.setOrderAmount((notUpdatedOrder.getOrderAmount() - priceToReduce) + updatedOrderItem.getTotalPrice());
+
+		Order updatedOrder = orderRepository.save(notUpdatedOrder);
 		return modelMapper.map(updatedOrderItem, OrderItemDto.class);
 	}
 
+	@Override
+	public List<OrderDto> fetchAllOrders() {
+		// TODO Auto-generated method stub
+		List<Order> allOrders = orderRepository.findAll();
+		List<OrderDto> allOrderDto = allOrders.stream().map(order -> modelMapper.map(order, OrderDto.class))
+				.collect(Collectors.toList());
+		return allOrderDto;
+	}
 
-
-
-
+	@Override
+	public void updateOrderStatus(ChangeOrderStatus changeOrderStatus) {
+		// TODO Auto-generated method stub
+		String orderStatus = changeOrderStatus.getOrderStatus();
+		String orderId = changeOrderStatus.getOrderId();
+		String reason=changeOrderStatus.getReason();
+		//String date=changeOrderStatus.getExpectedDeliveryDate();
+		LocalDate localDate = LocalDate.parse(changeOrderStatus.getExpectedDeliveryDate());
+//		System.out.println(localDate);
+//		System.out.println(orderStatus+"  "+orderId);
+		
+		
+		if(orderStatus.equalsIgnoreCase("fulfill")){
+			Order order = orderRepository.findOrderByOrderId(orderId);
+			List<OrderItem> orderItems = order.getOrderItems();
+			for(OrderItem orderItem: orderItems) {
+				String productId = orderItem.getProduct().getProductId();
+				int quantity = orderItem.getQuantity();
+				int newQuantity = 0;
+				int stock = orderItem.getProduct().getStock();
+				if(stock > quantity){
+					newQuantity = stock - quantity;
+				}
+				
+				productRepository.updateStock(productId, newQuantity);
+			}
+		}
+		
+		orderRepository.updateOrderStatusByOrderId(orderStatus, orderId, reason, localDate);
+		
+	} 
+ 
 }
