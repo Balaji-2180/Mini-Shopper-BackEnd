@@ -1,7 +1,7 @@
-package com.example.demo.Service;
+package minishopper.service;
 
-import com.example.demo.Entity.LoginData;
+import minishopper.entity.LoginData;
 
 public interface LoginDataService {
-    LoginData saveLoginData(LoginData loginData);
+	LoginData saveLoginData(LoginData loginData);
 }

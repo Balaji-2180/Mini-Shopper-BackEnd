@@ -1,12 +1,16 @@
-package com.example.demo.Service;
+package minishopper.service;
 
-import com.example.demo.dtos.AddItemToCart;
-import com.example.demo.dtos.CartDto;
+import minishopper.dto.AddItemToCartDto;
+import minishopper.dto.CartDto;
+import minishopper.entity.CartItem;
 
 public interface CartService {
-  CartDto addItemToCart(String userId, AddItemToCart item);
-  
-  CartDto fetCartbyUser(String userId);
-  
-  void deleteItemFromCart(String userId,int cartItemId);
+	CartDto addItemToCart(String userId, AddItemToCartDto item);
+
+	CartDto fetCartbyUser(String userId);
+
+	void deleteItemFromCart(String userId, int cartItemId);
+	
+	CartItem getCartItemById(int cartItemId);
+	
 }

@@ -1,28 +1,21 @@
-package com.example.demo.Service;
+package minishopper.service;
 
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.Entity.Product;
+import minishopper.entity.Product;
 
 public interface ProductService {
-	
+
 	public List<Product> getAllProducts();
-	
+
 	public Product getByProductId(String productId);
 
-//	public List<Product> getAllProductsByProductName(String productName);
-	
-//	public List<Product> getAllProductsByBrand(String brand);
-	
 	public List<Product> getAllProductsByCategory(String category);
-	
+
 	public List<Product> getAllAvailableProduct();
-//	
-//	public void updateStock(String productId,int stock);
-	
+
 	public Product saveImage(MultipartFile image);
-	
 
 }

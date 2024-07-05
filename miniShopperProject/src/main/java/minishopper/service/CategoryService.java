@@ -1,12 +1,13 @@
-package com.example.demo.Service;
+package minishopper.service;
 
 import java.util.List;
 
-import com.example.demo.Entity.Category;
+import minishopper.entity.Category;
 
 public interface CategoryService {
-	
+
 	List<Category> fetchAllCategories();
+
 	Category fetchCategoryById(String CategoryId);
 
 }

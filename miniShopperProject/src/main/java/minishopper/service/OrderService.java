@@ -2,7 +2,7 @@ package minishopper.service;
 
 import java.util.List;
 
-import minishopper.dto.ChangeOrderStatus;
+import minishopper.dto.ChangeOrderStatusDto;
 import minishopper.dto.CreateOrderRequestDto;
 import minishopper.dto.OrderDto;
 import minishopper.dto.OrderItemDto;
@@ -28,6 +28,8 @@ public interface OrderService {
 	
 	List<OrderDto> fetchAllOrders();
 	
-	void updateOrderStatus(ChangeOrderStatus changeOrderStatus);
+	void updateOrderStatus(ChangeOrderStatusDto changeOrderStatusDto);
+	
+	OrderItem getOrderItemById(int orderItemId);
 
 }
