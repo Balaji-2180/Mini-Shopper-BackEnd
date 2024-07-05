@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class JwtResponseDto {
+	
 	private String accessToken;
 	private String refreshToken;
 	private UserDto user;

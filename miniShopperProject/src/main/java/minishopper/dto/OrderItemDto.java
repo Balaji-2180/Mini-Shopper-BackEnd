@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

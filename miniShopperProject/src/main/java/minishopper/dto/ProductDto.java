@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,19 +15,13 @@ import lombok.Setter;
 public class ProductDto {
 	
 	private String productId;
-	
 	private String	productName;
-
 	private String	brand;
-
     private double	unitPrice;
-    
     private double	discountedPrice;
-
 	private int	stock;
-
 	private String	category;
-	
 	private String	shortDescription;
+	private String image;
 
 }

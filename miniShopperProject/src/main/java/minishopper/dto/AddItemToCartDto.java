@@ -1,6 +1,7 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddItemToCart {
+@Builder
+public class AddItemToCartDto {
+	
 	private String productId;
 	private int quantity;
 

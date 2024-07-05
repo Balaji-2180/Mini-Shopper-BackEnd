@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateOrderItem {
+public class UpdateOrderItemDto {
 	
 	private int orderItemId;
 	private int quantity;

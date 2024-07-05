@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,23 +9,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExcelOrder {
+public class ExcelOrderDto {
 private String productId;
 	
 	private String	productName;
-
 	private String	brand;
-
     private double	unitPrice;
-    
     private double	discountedPrice;
-
 	private int	stock;
-
 	private String	category;
-	
 	private String	shortDescription;
-	
 	private int quantity;
 
 	@Override

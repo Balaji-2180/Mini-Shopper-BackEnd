@@ -1,15 +1,13 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
-import com.example.demo.Entity.Cart;
-import com.example.demo.Entity.CartItem;
-import com.example.demo.Entity.Product;
-
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import minishopper.entity.Cart;
+import minishopper.entity.CartItem;
+import minishopper.entity.Product;
 
 @Getter
 @Setter
@@ -17,13 +15,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class CartItemDto {
-	
+
 	private int cartItemId;
-	
 	private ProductDto product;
-	
 	private int quantity;
-	
 	private double totalPrice;
 
 }

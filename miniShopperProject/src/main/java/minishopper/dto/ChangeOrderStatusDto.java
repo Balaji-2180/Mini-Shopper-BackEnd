@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChangeOrderStatus {
+public class ChangeOrderStatusDto {
 
 	private String orderId;
 	private String orderStatus;

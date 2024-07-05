@@ -1,4 +1,4 @@
-package com.example.demo.dtos;
+package minishopper.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +12,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class UserDto {
-	
+
 	private String userId;
 	private String firstName;
 	private String lastName;
 	private String email;
-	
 	private String address;
 	private String street;
 	private String city;
 	private String state;
 	private String pinCode;
 	private String image;
+	private String role;
 }
