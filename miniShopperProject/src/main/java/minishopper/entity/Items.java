@@ -1,4 +1,4 @@
-package com.example.demo.Entity;
+package minishopper.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

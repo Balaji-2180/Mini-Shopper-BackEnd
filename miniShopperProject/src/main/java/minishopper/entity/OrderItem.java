@@ -1,4 +1,4 @@
-package com.example.demo.Entity;
+package minishopper.entity;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -39,7 +39,6 @@ public class OrderItem {
 	
 	@Column(nullable = false)
 	private double totalPrice;
-	
 
 	@ManyToOne
 	@JoinColumn(name = "product_id", nullable = false )

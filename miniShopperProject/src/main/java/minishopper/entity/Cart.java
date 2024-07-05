@@ -1,4 +1,4 @@
-package com.example.demo.Entity;
+package minishopper.entity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.demo.Entity;
+package minishopper.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,8 +27,6 @@ public class LoginData {
 	@Column(name="userId",length=100)
 	private String userId;
 	
-	
-	
 	@Column(name="loginStatus", length=50)
 	private String loginStatus;
 	
@@ -38,10 +36,6 @@ public class LoginData {
 	@Column(name="time")
 	private LocalTime time;
 
-	
-
-
-
 	public LoginData(String userId, String loginStatus, LocalDate date, LocalTime time) {
 		super();
 		this.userId = userId;
@@ -49,7 +43,5 @@ public class LoginData {
 		this.date = date;
 		this.time = time;
 	}
-	
-	
 
 }

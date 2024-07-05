@@ -1,5 +1,6 @@
-package com.example.demo.Entity;
+package minishopper.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,8 +31,10 @@ public class CartItem {
 	@JoinColumn(name="product_id")
 	private Product product;
 		
+	@Column(name= "quantity")
 	private int quantity;
 
+	@Column(name = "totalPrice")
 	private double totalPrice;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

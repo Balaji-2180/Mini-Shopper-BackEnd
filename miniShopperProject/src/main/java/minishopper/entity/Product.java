@@ -1,4 +1,4 @@
-package com.example.demo.Entity;
+package minishopper.entity;
 
 import java.util.Arrays;
 
@@ -8,15 +8,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity(name ="product")
 @Table(name="product")
-@AllArgsConstructor
 public class Product {
 	
 	@Id
@@ -44,86 +48,9 @@ public class Product {
 	@Column(name="shortDescription", length=1000, nullable=false)
 	private String	shortDescription;
 	
-//	@Lob
-//	@Column(columnDefinition = "longblob")
-//	private byte[] image;
-//	
-	
-	@Column(columnDefinition = "longtext")
+	@Column(name="image", columnDefinition = "longtext")
 	private String image;
 	
-	
-
-
-	public double getDiscountedPrice() {
-		return discountedPrice;
-	}
-
-	public void setDiscountedPrice(double discountedPrice) {
-		this.discountedPrice = discountedPrice;
-	}
-
-	public String getShortDescription() {
-		return shortDescription;
-	}
-
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
-
-	public String getProductId() {
-		return productId;
-	}
-
-	public void setProductId(String productId) {
-		this.productId = productId;
-	}
-
-	public String getProductName() {
-		return productName;
-	}
-
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-
-	public String getBrand() {
-		return brand;
-	}
-
-	public void setBrand(String brand) {
-		this.brand = brand;
-	}
-
-	public double getUnitPrice() {
-		return unitPrice;
-	}
-
-	public void setUnitPrice(double unitPrice) {
-		this.unitPrice = unitPrice;
-	}
-
-	public int getStock() {
-		return stock;
-	}
-
-	public void setStock(int stock) {
-		this.stock = stock;
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-	public Product() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	public Product(String productId, String productName, String brand, double unitPrice, int stock,
 			String category, String	shortDescription,double	discountedPrice) {
 		super();
@@ -137,16 +64,6 @@ public class Product {
 		this.discountedPrice = discountedPrice;
 	}
 
-	
-
-//	public byte[] getImage() {
-//		return image;
-//	}
-//
-//	public void setImage(byte[] image) {
-//		this.image = image;
-//	}
-
 	@Override
 	public String toString() {
 		return "Product [productId=" + productId + ", productName=" + productName + ", brand=" + brand + ", unitPrice="
@@ -154,15 +71,6 @@ public class Product {
 				+ ", shortDescription=" + shortDescription + ", image=" + image + "]";
 	}
 
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	
 	
 	
 	

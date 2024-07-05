@@ -1,4 +1,4 @@
-package com.example.demo.Entity;
+package minishopper.entity;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -23,9 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
-
-@Entity
+@Entity(name = "orders")
 @Table(name = "orders")
 @Getter
 @Setter
@@ -40,7 +38,7 @@ public class Order {
 	@Column(nullable=false)
 	private String orderNumber;
 	
-	@Column(nullable = false, columnDefinition = "varchar(20) default 'PENDING'")
+	@Column(nullable = false, columnDefinition = "varchar(50) default 'PENDING'")
 	private String orderStatus;
 	
 	@Column(nullable = false, columnDefinition = "varchar(20) default 'NOT PAID'")
@@ -50,13 +48,19 @@ public class Order {
 	private double orderAmount;
 	
 	@Column(nullable = false)
-	private String orderName;
+	private String orderName;	
+	
+	@Column(nullable = false)
+	private String firstName;
+	
+	@Column(nullable = false)
+	private String lastName;
 	
 	@Column(nullable = false)
 	private String shippingAddress;
 	
-	@Column(length = 6, nullable = false)
-	private String postalCode;
+	@Column(name="pinCode", length = 6, nullable = false)
+	private String pinCode;
 	
 	@Column(nullable = false)
 	private String city;
@@ -65,7 +69,7 @@ public class Order {
 	private String state;
 	
 	@Column(length=10,nullable = false)
-	private String shippingPhone;
+	private String phoneNumber;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id",nullable = false)
@@ -73,8 +77,7 @@ public class Order {
 	
 	@Column(nullable = true)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate deliveredDate;
-	
+	private LocalDate deliveredDate;	
 	
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
@@ -82,36 +85,21 @@ public class Order {
 	
 	@OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems=new ArrayList<>();
-
-	public Order(String orderId, String orderNumber, String orderStatus, String paymentStatus, double orderAmount,
-			String orderName, String shippingAddress, String postalCode, String city, String state,
-			String shippingPhone, User user, LocalDate deliveredDate, Date createdAt) {
-		super();
-		this.orderId = orderId;
-		this.orderNumber = orderNumber;
-		this.orderStatus = orderStatus;
-		this.paymentStatus = paymentStatus;
-		this.orderAmount = orderAmount;
-		this.orderName = orderName;
-		this.shippingAddress = shippingAddress;
-		this.postalCode = postalCode;
-		this.city = city;
-		this.state = state;
-		this.shippingPhone = shippingPhone;
-		this.user = user;
-		this.deliveredDate = deliveredDate;
-		this.createdAt = createdAt;
-	}
+	
+	@Column(name = "reason", length = 500, nullable = true)
+	private String reason;
 
 	@Override
 	public String toString() {
 		return "Order [orderId=" + orderId + ", orderNumber=" + orderNumber + ", orderStatus=" + orderStatus
-				+ ", paymentStatus=" + paymentStatus + ", orderAmount=" + orderAmount + ", orderName=" + orderName
-				+ ", shippingAddress=" + shippingAddress + ", postalCode=" + postalCode + ", city=" + city + ", state="
-				+ state + ", shippingPhone=" + shippingPhone + ", user=" + user + ", deliveredDate=" + deliveredDate
-				+ ", createdAt=" + createdAt + ", orderItems=" + orderItems + "]";
+				+ ", paymentStatus=" + paymentStatus + ", orderAmount=" + orderAmount + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", shippingAddress=" + shippingAddress + ", postalCode=" + pinCode
+				+ ", city=" + city + ", state=" + state + ", phoneNumber=" + phoneNumber + ", user=" + user
+				+ ", deliveredDate=" + deliveredDate + ", createdAt=" + createdAt + ", orderItems=" + orderItems + "]";
 	}
-	
+
 	
 
+	
+	
 }
