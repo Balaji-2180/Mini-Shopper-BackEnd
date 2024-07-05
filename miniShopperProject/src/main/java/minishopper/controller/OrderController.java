@@ -28,7 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import minishopper.dto.ChangeOrderStatus;
+import jakarta.validation.Valid;
+import minishopper.dto.ChangeOrderStatusDto;
 import minishopper.dto.CreateOrderRequestDto;
 import minishopper.dto.ExcelOrderDto;
 import minishopper.dto.OrderDto;
@@ -54,8 +55,8 @@ public class OrderController {
 
 	@PostMapping()
 	public ResponseEntity<OrderDto> createOrder(@RequestBody CreateOrderRequestDto orderRequest) {
+	//	System.out.println("in order controller");
 		OrderDto ordered = orderService.createOrder(orderRequest);
-		System.out.println(orderRequest.toString());
 		return new ResponseEntity<OrderDto>(ordered, HttpStatus.OK);
 	}
 
@@ -66,9 +67,12 @@ public class OrderController {
 	}
 
 	@PostMapping("/updateOrderItem")
-	public ResponseEntity<OrderDto> updateItemInOrdere(@RequestBody UpdateOrderItemDto updateOrderItem) {
-		OrderItemDto updated = orderService.updateOrderItem(updateOrderItem);
-		return new ResponseEntity<OrderDto>(new OrderDto(), HttpStatus.OK);
+	public ResponseEntity<OrderItemDto> updateItemInOrdere(@RequestBody UpdateOrderItemDto updateOrderItem) {
+		OrderItemDto updatedOrder = orderService.updateOrderItem(updateOrderItem);
+		if(updatedOrder == null) {
+			return new ResponseEntity<OrderItemDto>(updatedOrder, HttpStatus.NOT_MODIFIED);
+		}
+		return new ResponseEntity<OrderItemDto>(updatedOrder, HttpStatus.OK);
 	}
 
 	@GetMapping("/user/{userId}")
@@ -93,6 +97,12 @@ public class OrderController {
 	public ResponseEntity<String> deleteItem(@PathVariable int orderItemId) {
 		OrderItem orderItem = orderService.removeOrderItemByOrderItemId(orderItemId);
 		orderService.updateTotalPrice(orderItem);
+		
+		OrderItem item = orderService.getOrderItemById(orderItemId);
+		
+		if(item == null) {
+			return new ResponseEntity<>("Unable to delete item", HttpStatus.NOT_MODIFIED);
+		}
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
 	}
 
@@ -100,6 +110,9 @@ public class OrderController {
 	public ResponseEntity<List<Product>> fetchAllProductsForExcel() {
 		System.out.println("in all products excel");
 		List<Product> availableProducts = productService.getAllAvailableProduct();
+		if(availableProducts.size() == 0) {
+			return new ResponseEntity<List<Product>>(availableProducts, HttpStatus.NOT_FOUND);
+		}
 		return new ResponseEntity<List<Product>>(availableProducts, HttpStatus.OK);
 	}
 
@@ -127,29 +140,21 @@ public class OrderController {
 	public ResponseEntity<List<OrderDto>> getAllOrdersForShopkeeper(){
 		List<OrderDto> orders = orderService.fetchAllOrders();
 		System.out.println(orders);
-		if(orders.size()>0){
-			return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.OK);
+		if(orders.size() == 0){
+			return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.NOT_FOUND);			
 		}
-		return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.NO_CONTENT);
+		return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.OK);
 	}
-	
+	 
 	
 	@PostMapping("/changeOrderStatus")
-	public ResponseEntity<OrderDto> changeOrderStatus(@RequestBody ChangeOrderStatus changeOrderStatus){
+	public ResponseEntity<OrderDto> changeOrderStatusDto(@RequestBody ChangeOrderStatusDto changeOrderStatusDto){
 		System.out.println("in chage status controller");
-		System.out.println(changeOrderStatus.toString());
-		LocalDate localDate = LocalDate.parse(changeOrderStatus.getExpectedDeliveryDate());
-		System.out.println(localDate);
-//		OrderDto updatedOrder = 
-//		ChangeOrderStatus changeOrderStatus=new ChangeOrderStatus();
-//		changeOrderStatus.setOrderId("3a9ab3bf-4748-488a-af95-56c4132b307a");
-//		changeOrderStatus.setOrderStatus("SENT FOR MODIFICATION");
-//		changeOrderStatus.setReason("why you need reason");	
-		orderService.updateOrderStatus(changeOrderStatus);
-		
-		OrderDto updatedOrder = orderService.fetchOrderByOrderId(changeOrderStatus.getOrderId());
-		
-		//System.out.println(updatedOrder);
+		orderService.updateOrderStatus(changeOrderStatusDto);
+		OrderDto updatedOrder = orderService.fetchOrderByOrderId(changeOrderStatusDto.getOrderId());
+		if(updatedOrder == null) {
+			return new ResponseEntity<OrderDto>(updatedOrder, HttpStatus.NOT_MODIFIED);
+		}
 		return new ResponseEntity<OrderDto>(updatedOrder, HttpStatus.OK);
 	}
 	
