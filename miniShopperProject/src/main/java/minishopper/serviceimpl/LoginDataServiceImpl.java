@@ -1,23 +1,22 @@
-package com.example.demo.Service.impl;
+package minishopper.serviceimpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.Entity.LoginData;
-import com.example.demo.Repository.LoginDataRepository;
-import com.example.demo.Service.LoginDataService;
+import minishopper.entity.LoginData;
+import minishopper.repository.LoginDataRepository;
+import minishopper.service.LoginDataService;
 
 @Service
-public class LoginDataServiceImpl implements LoginDataService{
-	
+public class LoginDataServiceImpl implements LoginDataService {
+
 	@Autowired
 	LoginDataRepository loginDataRepo;
 
 	@Override
 	public LoginData saveLoginData(LoginData loginData) {
-		
+
 		return loginDataRepo.save(loginData);
 	}
-	
 
 }

@@ -14,7 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import minishopper.dto.ChangeOrderStatus;
+import minishopper.dto.ChangeOrderStatusDto;
 import minishopper.dto.CreateOrderRequestDto;
 import minishopper.dto.ExcelOrderDto;
 import minishopper.dto.OrderDto;
@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
 //		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
 		AtomicReference<Double> totalOrderAmount = new AtomicReference<Double>((double) 0);
 
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).firstName(orderRequest.getFirstName())
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName()).firstName(orderRequest.getFirstName())
 				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
 				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
 				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
@@ -98,8 +98,8 @@ public class OrderServiceImpl implements OrderService {
 
 			totalOrderAmount.set(totalOrderAmount.get() + orderItem.getTotalPrice());
 
-			product.setStock(availableStock - requestedQuantity);
-			productRepository.save(product);
+//			product.setStock(availableStock - requestedQuantity);
+//			productRepository.save(product);
 			orderItems.add(orderItem);
 		}
 		order.setOrderItems(orderItems);
@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
 
 		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
 
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).firstName(orderRequest.getFirstName())
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName()).firstName(orderRequest.getFirstName())
 				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
 				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
 				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
@@ -150,8 +150,8 @@ public class OrderServiceImpl implements OrderService {
 
 		Order savedOrder = orderRepository.save(order);
 
-		product.setStock(product.getStock() - orderRequest.getQuantity());
-		productRepository.save(product);
+//		product.setStock(product.getStock() - orderRequest.getQuantity());
+//		productRepository.save(product);
 
 		return modelMapper.map(savedOrder, OrderDto.class);
 	}
@@ -179,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
 
 		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
 
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).firstName(orderRequest.getFirstName())
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName()).firstName(orderRequest.getFirstName())
 				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
 				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
 				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
@@ -208,8 +208,8 @@ public class OrderServiceImpl implements OrderService {
 							.order(order).build();
 					orderable.add(orderItem);
 					totalPrice += orderItem.getTotalPrice();
-					product.setStock(product.getStock() - requestedQuantity);
-					productRepository.save(product);
+//					product.setStock(product.getStock() - requestedQuantity);
+//					productRepository.save(product);
 				}
 			}
 		}
@@ -286,13 +286,13 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void updateOrderStatus(ChangeOrderStatus changeOrderStatus) {
+	public void updateOrderStatus(ChangeOrderStatusDto changeOrderStatusDto) {
 		// TODO Auto-generated method stub
-		String orderStatus = changeOrderStatus.getOrderStatus();
-		String orderId = changeOrderStatus.getOrderId();
-		String reason=changeOrderStatus.getReason();
+		String orderStatus = changeOrderStatusDto.getOrderStatus();
+		String orderId = changeOrderStatusDto.getOrderId();
+		String reason=changeOrderStatusDto.getReason();
 		//String date=changeOrderStatus.getExpectedDeliveryDate();
-		LocalDate localDate = LocalDate.parse(changeOrderStatus.getExpectedDeliveryDate());
+		LocalDate localDate = LocalDate.parse(changeOrderStatusDto.getExpectedDeliveryDate());
 //		System.out.println(localDate);
 //		System.out.println(orderStatus+"  "+orderId);
 		
@@ -315,6 +315,13 @@ public class OrderServiceImpl implements OrderService {
 		
 		orderRepository.updateOrderStatusByOrderId(orderStatus, orderId, reason, localDate);
 		
+	}
+
+	@Override
+	public OrderItem getOrderItemById(int orderItemId) {
+		// TODO Auto-generated method stub
+		OrderItem orderItem = orderItemRepository.findById(orderItemId);
+		return orderItem;
 	} 
  
 }

@@ -1,18 +1,17 @@
-package com.example.demo.Service.impl;
+package minishopper.serviceimpl;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.Entity.Category;
-import com.example.demo.Repository.CategoryRepository;
-import com.example.demo.Service.CategoryService;
-
+import minishopper.entity.Category;
+import minishopper.repository.CategoryRepository;
+import minishopper.service.CategoryService;
 
 @Service
-public class CategoryServiceImpl implements CategoryService{
-	
+public class CategoryServiceImpl implements CategoryService {
+
 	@Autowired
 	CategoryRepository categoryRepository;
 
@@ -25,7 +24,6 @@ public class CategoryServiceImpl implements CategoryService{
 	@Override
 	public Category fetchCategoryById(String CategoryId) {
 		// TODO Auto-generated method stub
-		//System.out.println("in service impl "+categoryRepository.findByCategoryId(CategoryId));
 		return categoryRepository.findByCategoryId(CategoryId);
 	}
 
