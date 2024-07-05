@@ -1,12 +1,10 @@
-package com.example.demo.Repository;
+package minishopper.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.Entity.User;
+import minishopper.entity.User;
 
-public interface UserRepository extends JpaRepository<User, String>{
-    User findByUserId(String userId);
-    
-    
-    
+public interface UserRepository extends JpaRepository<User, String> {
+	User findByUserId(String userId);
+
 }

@@ -1,10 +1,9 @@
-package com.example.demo.Repository;
+package minishopper.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.Entity.LoginData;
+import minishopper.entity.LoginData;
 
+public interface LoginDataRepository extends JpaRepository<LoginData, Integer> {
 
-public interface LoginDataRepository extends JpaRepository<LoginData, Integer>{
-          
 }
