@@ -1,5 +1,5 @@
-package com.example.demo.Response;
+package minishopper.response;
 
-public class RegisterResponse extends BaseResponse{
+public class RegisterResponse extends BaseResponse {
 
 }
