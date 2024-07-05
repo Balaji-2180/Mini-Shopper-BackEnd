@@ -1,4 +1,4 @@
-package com.example.demo.exception;
+package minishopper.exception;
 
 public class UnauthorizedException extends RuntimeException{
 	

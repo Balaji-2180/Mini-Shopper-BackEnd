@@ -1,4 +1,4 @@
-package com.example.demo.exception;
+package minishopper.exception;
 
 public class ResourceNotFoundException extends RuntimeException{
 	
