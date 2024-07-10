@@ -41,23 +41,8 @@ public class User {
 	@Column(name = "password")
 	private String password;
 
-	@Column(name = "address", nullable = true)
-	private String address;
-	
-	@Column(name = "street", nullable = true)
-	private String street;
-	
-	@Column(name = "city", nullable = true)
-	private String city;
-	
-	@Column(name = "state", nullable = true)
-	private String state;
-	
-	@Column(name = "pinCode", nullable = true)
-	private String pinCode;
-	
-	@Column(name = "image", nullable = true)
-	private String image;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	private List<Address> addresses = new ArrayList<>();
 	
 	@Column(name = "role", nullable = false)
 	private String role;
@@ -75,11 +60,9 @@ public class User {
 		this.role = role;
 	}
 
-	@Override
-	public String toString() {
-		return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", password=" + password + ", address=" + address + ", street=" + street + ", city=" + city
-				+ ", state=" + state + ", pinCode=" + pinCode + ", image=" + image + "]";
-	}
+	
+
+	
+	
 
 }
