@@ -80,7 +80,7 @@ public class CartServiceImpl implements CartService {
 	public CartDto fetCartbyUser(String userId) {
 		User user = userRepository.findByUserId(userId);
 		Cart userCart = cartRepository.findByUser(user);
-
+ 
 		return modelMapper.map(userCart, CartDto.class);
 	}
 

@@ -1,14 +1,19 @@
 package minishopper.serviceimpl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import minishopper.dto.AddressDto;
 import minishopper.dto.UserDto;
+import minishopper.entity.Address;
 import minishopper.entity.User;
+import minishopper.repository.AddressRepository;
 import minishopper.repository.UserRepository;
 import minishopper.service.UserService;
 
@@ -16,7 +21,10 @@ import minishopper.service.UserService;
 public class UserServiceImpl implements UserService {
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
+	
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@Autowired
 	ModelMapper modelMapper;
@@ -25,10 +33,15 @@ public class UserServiceImpl implements UserService {
 	private PasswordEncoder passwordEncoder;
 
 	@Override
-	public User saveUser(User user) {
+	public User saveUser(UserDto userDto) {
 		// TODO Auto-generated method stub
+		Address address = modelMapper.map(userDto.getAddress().get(0), Address.class);
+		User user = modelMapper.map(userDto, User.class);
+		address.setUser(user);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		return userRepository.save(user);
+		User savedUser = userRepository.save(user);
+		addressRepository.save(address);
+		return savedUser;
 	}
 
 	@Override
@@ -41,25 +54,29 @@ public class UserServiceImpl implements UserService {
 	public UserDto fetchUserDetailsById(String userId) {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
-		return modelMapper.map(user, UserDto.class);
+		List<Address> allAddress = addressRepository.findByUser(user);
+		List<AddressDto> allAddressDto =  new ArrayList<>();
+		for(int i=0;i<allAddress.size();i++) {
+			allAddressDto.add(modelMapper.map(allAddress.get(i), AddressDto.class));
+		}
+		UserDto userDto = modelMapper.map(user, UserDto.class);
+		userDto.setAddress(allAddressDto);
+		return userDto;
 	}
 
 	@Override
-	public UserDto updateUser(String userId, UserDto userDto) {
+	public UserDto updateUser(String userId, AddressDto addressDto) {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
-		user.setFirstName(userDto.getFirstName());
-		user.setLastName(userDto.getLastName());
-		user.setAddress(userDto.getAddress());
-		user.setStreet(userDto.getStreet());
-		user.setCity(userDto.getCity());
-		user.setState(userDto.getState());
-		user.setPinCode(userDto.getPinCode());
-		if (userDto.getImage() != null) {
-			userDto.setImage(userDto.getImage());
-		}
-		User savedUser = userRepository.save(user);
-		return modelMapper.map(savedUser, UserDto.class);
+		Address address = modelMapper.map(addressDto, Address.class);
+		address.setUser(user);
+		Address updatedAddress = addressRepository.save(address);
+		AddressDto updatedAddressDto = modelMapper.map(updatedAddress, AddressDto.class); 
+		List<AddressDto> listOfAddress = new ArrayList<>();
+		listOfAddress.add(updatedAddressDto);
+		UserDto savedUser = modelMapper.map( user , UserDto.class);
+		savedUser.setAddress(listOfAddress);
+		return savedUser;
 	}
 
 }

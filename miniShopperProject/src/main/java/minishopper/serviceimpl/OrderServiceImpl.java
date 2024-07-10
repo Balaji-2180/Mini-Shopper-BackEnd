@@ -295,9 +295,10 @@ public class OrderServiceImpl implements OrderService {
 		LocalDate localDate = LocalDate.parse(changeOrderStatusDto.getExpectedDeliveryDate());
 //		System.out.println(localDate);
 //		System.out.println(orderStatus+"  "+orderId);
-		
+		String paymentStatus = "NOT PAID";
 		
 		if(orderStatus.equalsIgnoreCase("fulfill")){
+			paymentStatus = "COD";
 			Order order = orderRepository.findOrderByOrderId(orderId);
 			List<OrderItem> orderItems = order.getOrderItems();
 			for(OrderItem orderItem: orderItems) {
@@ -313,7 +314,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 		
-		orderRepository.updateOrderStatusByOrderId(orderStatus, orderId, reason, localDate);
+		orderRepository.updateOrderStatusByOrderId(orderStatus, orderId, reason, localDate, paymentStatus);
 		
 	}
 

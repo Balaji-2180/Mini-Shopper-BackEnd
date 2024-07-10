@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		Product newProduct = new Product();
 		try {
-			String productId = "PID4013";
+			String productId = "PID2022";
 			Product p = productRepository.findByProductId(productId);
 			String newImage = Base64.getEncoder().encodeToString(image.getBytes());
 			p.setImage(newImage);
