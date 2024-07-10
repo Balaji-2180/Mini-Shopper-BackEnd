@@ -35,11 +35,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import minishopper.dto.AddressDto;
 import minishopper.dto.JwtResponseDto;
 import minishopper.dto.LoginDto;
 import minishopper.dto.UserDto;
 import minishopper.entity.LoginData;
 import minishopper.entity.User;
+import minishopper.exception.InvalidInputException;
 import minishopper.exception.LoginException;
 import minishopper.exception.UnauthorizedException;
 import minishopper.repository.LoginDataRepository;
@@ -52,14 +55,11 @@ import minishopper.service.LoginDataService;
 import minishopper.service.UserService;
 import minishopper.serviceimpl.UserServiceImpl;
 
-@CrossOrigin(origins = "*")
+
 @Controller
 @RequestMapping("/users")
 public class LoginController {
-
-	@Autowired
-	LoginDataService loginDataService;
-
+	
 	@Autowired
 	private AuthenticationManager manager;
 	
@@ -71,27 +71,42 @@ public class LoginController {
 
 	@Autowired
 	private UserService userService;
+	
+	public boolean checkUserId(String userId) {
+		User loginUser = userService.checkUserId(userId);
+		if(loginUser == null) {
+			return false;
+		}
+		return true;
+	}
 
 	@PostMapping("/loginUser")
-	public ResponseEntity<JwtResponseDto> loginUser(@RequestBody LoginDto loginDto) {
+	public ResponseEntity<JwtResponseDto> loginUser(@Valid @RequestBody LoginDto loginDto) throws UnauthorizedException{
+		if(userService.checkUserId(loginDto.getUserId()) == null) {
+			throw new UnauthorizedException("Invalid UserId !");
+		}
 	    doAuthenticate(loginDto.getUserId(), loginDto.getPassword());
+	   
 		UserDetails userDetails = userDetailService.loadUserByUsername(loginDto.getUserId());
 		String jwtToken = this.jwtHelper.generateToken(userDetails);
 		String refreshToken = this.jwtHelper.generateRefreshToken(userDetails);
 		UserDto userDto = userService.fetchUserDetailsById(userDetails.getUsername());
 		userDto.setUserId(userDetails.getUsername());
 		JwtResponseDto response = new JwtResponseDto();
-//		System.out.println(loginDto.getRole());
 		if(!(loginDto.getRole().equalsIgnoreCase(userDto.getRole()))){
-			return new ResponseEntity<JwtResponseDto>(response, HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<JwtResponseDto>(response, HttpStatus.UNAUTHORIZED);
 		}
 		response = JwtResponseDto.builder().accessToken(jwtToken).refreshToken(refreshToken).user(userDto).build();
+		
 		return new ResponseEntity<JwtResponseDto>(response, HttpStatus.OK);
 
 	}
 
 	@PostMapping("/{userId}")
 	public ResponseEntity<UserDto> getUserById(@PathVariable String userId) {
+		if(!checkUserId(userId)) {
+			throw new InvalidInputException("Invalid UserId !");
+		}
 		UserDto userDto = userService.fetchUserDetailsById(userId);
 		if(userDto == null) {
 			return new ResponseEntity<UserDto>(userDto, HttpStatus.NOT_FOUND);
@@ -100,10 +115,13 @@ public class LoginController {
 	}
 
 	@PutMapping("/{userId}")
-	public ResponseEntity<UserDto> updateUserDetails(@PathVariable String userId, @RequestBody UserDto userDetails) {
-		UserDto userDto = userService.updateUser(userId, userDetails);
+	public ResponseEntity<UserDto> updateUserDetails(@PathVariable String userId, @Valid @RequestBody AddressDto address) {
+		if(!checkUserId(userId)) {
+			throw new InvalidInputException("Invalid UserId !");
+		}
+		UserDto userDto = userService.updateUser(userId, address);
 		if(userDto == null) {
-			return new ResponseEntity<UserDto>(userDto, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<UserDto>(userDto, HttpStatus.NOT_MODIFIED);
 		}
 		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
 	}
@@ -113,7 +131,7 @@ public class LoginController {
 		try {
 			manager.authenticate(authentication);
 		} catch (BadCredentialsException e) {
-			throw new UnauthorizedException("Invalid email or password!");
+			throw new UnauthorizedException("Wrong password!");
 		}
 	}
 

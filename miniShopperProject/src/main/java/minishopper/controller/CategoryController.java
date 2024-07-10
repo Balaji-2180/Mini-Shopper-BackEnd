@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import minishopper.entity.Category;
 import minishopper.entity.Product;
+import minishopper.exception.ResourceNotFoundException;
 import minishopper.service.CategoryService;
 import minishopper.service.ProductService;
 
@@ -21,10 +22,10 @@ import minishopper.service.ProductService;
 public class CategoryController {
 
 	@Autowired
-	CategoryService categoryService;
+	private CategoryService categoryService;
 
 	@Autowired
-	ProductService productService;
+	private ProductService productService;
 
 	@GetMapping
 	public ResponseEntity<List<Category>> getAllCategories() {
@@ -36,20 +37,20 @@ public class CategoryController {
 	}
 
 	@GetMapping("/{categoryId}")
-	public ResponseEntity<Category> getCategoryById(@PathVariable String categoryId) {
+	public ResponseEntity<Category> getCategoryById(@PathVariable String categoryId) throws ResourceNotFoundException{
 		Category category = categoryService.fetchCategoryById(categoryId);
 		if (category == null) {
-			return new ResponseEntity<Category>(category, HttpStatus.NOT_FOUND);
+			throw new ResourceNotFoundException("Category Not Found");
 		}
 		return new ResponseEntity<Category>(category, HttpStatus.OK);
 	}
 
 	@GetMapping("/{categoryId}/products")
-	public ResponseEntity<List<Product>> getProductsByCategoryId(@PathVariable String categoryId) {
+	public ResponseEntity<List<Product>> getProductsByCategoryId(@PathVariable String categoryId) throws ResourceNotFoundException{
 		List<Product> categoryProducts = new ArrayList<>();
 		Category category = categoryService.fetchCategoryById(categoryId);
 		if (category == null) {
-			return new ResponseEntity<List<Product>>(categoryProducts, HttpStatus.NOT_FOUND);
+			throw new ResourceNotFoundException("Category Not Found");
 		}
 		String categoryTitle = category.getCategoryTitle().toLowerCase();
 		categoryProducts = productService.getAllProductsByCategory(categoryTitle);

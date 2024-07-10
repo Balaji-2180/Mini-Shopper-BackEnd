@@ -12,21 +12,40 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.validation.Valid;
 import minishopper.dto.AddItemToCartDto;
 import minishopper.dto.CartDto;
 import minishopper.entity.CartItem;
+import minishopper.entity.User;
+import minishopper.exception.InvalidInputException;
+import minishopper.exception.ResourceNotFoundException;
+import minishopper.exception.UnauthorizedException;
 import minishopper.service.CartService;
+import minishopper.service.UserService;
 
-@CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/carts")
 public class CartController {
 
 	@Autowired
-	CartService cartService;
+	private CartService cartService;
+	
+	@Autowired
+	private UserService userService;
+	
+	public boolean checkUserId(String userId) {
+		User loginUser = userService.checkUserId(userId);
+		if(loginUser == null) {
+			return false;
+		}
+		return true;
+	}
 
-	@GetMapping("/user/{userId}")
-	public ResponseEntity<CartDto> getCartByUserId(@PathVariable String userId) {
+	@PostMapping("/user/{userId}")
+	public ResponseEntity<CartDto> getCartByUserId(@PathVariable String userId) throws InvalidInputException{
+		if(!checkUserId(userId)) {
+			throw new InvalidInputException("Invalid UserId !");
+		}
 		CartDto userCart = cartService.fetCartbyUser(userId);
 		if (userCart == null) {
 			return new ResponseEntity<CartDto>(userCart, HttpStatus.NOT_FOUND);
@@ -35,7 +54,10 @@ public class CartController {
 	}
 
 	@PostMapping("/{userId}")
-	public ResponseEntity<CartDto> addItemToCart(@PathVariable String userId, @RequestBody AddItemToCartDto item) {
+	public ResponseEntity<CartDto> addItemToCart(@PathVariable String userId, @Valid @RequestBody AddItemToCartDto item) throws InvalidInputException{
+		if(!checkUserId(userId)) {
+			throw new InvalidInputException("Invalid UserId !");
+		}
 		CartDto cartDto = cartService.addItemToCart(userId, item);
 		if(cartDto == null) {
 			return new ResponseEntity<CartDto>(cartDto, HttpStatus.NOT_MODIFIED);
@@ -44,7 +66,17 @@ public class CartController {
 	}
 
 	@DeleteMapping("/{userId}/item/{itemId}")
-	public ResponseEntity<String> deleteItem(@PathVariable String userId, @PathVariable int itemId) {
+	public ResponseEntity<String> deleteItem(@PathVariable String userId, @PathVariable int itemId) throws InvalidInputException, ResourceNotFoundException{
+		if(!checkUserId(userId)) {
+			throw new InvalidInputException("Invalid UserId !");
+		}
+		if(itemId<1) {
+			throw new InvalidInputException("Invalid ItemId !");
+		}
+		if(cartService.getCartItemById(itemId) == null) {
+			throw new ResourceNotFoundException("Cart Item Not Found");
+		}
+		
 		cartService.deleteItemFromCart(userId, itemId);
 		CartItem cartItem = cartService.getCartItemById(itemId);
 		if(cartItem != null) {

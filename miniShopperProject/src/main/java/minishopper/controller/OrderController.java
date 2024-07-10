@@ -42,7 +42,6 @@ import minishopper.response.RegisterResponse;
 import minishopper.service.OrderService;
 import minishopper.service.ProductService;
 
-@CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
@@ -54,20 +53,20 @@ public class OrderController {
 	ProductService productService;
 
 	@PostMapping()
-	public ResponseEntity<OrderDto> createOrder(@RequestBody CreateOrderRequestDto orderRequest) {
+	public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderRequestDto orderRequest) {
 	//	System.out.println("in order controller");
 		OrderDto ordered = orderService.createOrder(orderRequest);
 		return new ResponseEntity<OrderDto>(ordered, HttpStatus.OK);
 	}
-
+ 
 	@PostMapping("/singleProduct")
-	public ResponseEntity<OrderDto> createOrderForSingleProduct(@RequestBody CreateOrderRequestDto orderRequest) {
+	public ResponseEntity<OrderDto> createOrderForSingleProduct(@Valid @RequestBody CreateOrderRequestDto orderRequest) {
 		OrderDto ordered = orderService.createOrderSingleProduct(orderRequest);
 		return new ResponseEntity<OrderDto>(ordered, HttpStatus.OK);
 	}
 
 	@PostMapping("/updateOrderItem")
-	public ResponseEntity<OrderItemDto> updateItemInOrdere(@RequestBody UpdateOrderItemDto updateOrderItem) {
+	public ResponseEntity<OrderItemDto> updateItemInOrdere(@Valid @RequestBody UpdateOrderItemDto updateOrderItem) {
 		OrderItemDto updatedOrder = orderService.updateOrderItem(updateOrderItem);
 		if(updatedOrder == null) {
 			return new ResponseEntity<OrderItemDto>(updatedOrder, HttpStatus.NOT_MODIFIED);
@@ -117,7 +116,7 @@ public class OrderController {
 	}
 
 	@PostMapping("/excel")
-	public ResponseEntity<OrderDto> orderExcelData(@RequestBody CreateOrderRequestDto orderRequest)
+	public ResponseEntity<OrderDto> orderExcelData(@Valid @RequestBody CreateOrderRequestDto orderRequest)
 			throws ResourceNotFoundException {
 		int totalNumberOfProducts = 0;
 		List<ExcelOrderDto> products = orderRequest.getProducts();
@@ -148,8 +147,9 @@ public class OrderController {
 	 
 	
 	@PostMapping("/changeOrderStatus")
-	public ResponseEntity<OrderDto> changeOrderStatusDto(@RequestBody ChangeOrderStatusDto changeOrderStatusDto){
+	public ResponseEntity<OrderDto> changeOrderStatusDto(@Valid @RequestBody ChangeOrderStatusDto changeOrderStatusDto){
 		System.out.println("in chage status controller");
+		System.out.println(changeOrderStatusDto.toString());
 		orderService.updateOrderStatus(changeOrderStatusDto);
 		OrderDto updatedOrder = orderService.fetchOrderByOrderId(changeOrderStatusDto.getOrderId());
 		if(updatedOrder == null) {

@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import minishopper.entity.Product;
 import minishopper.entity.User;
+import minishopper.exception.ResourceNotFoundException;
 import minishopper.repository.ProductRepository;
 import minishopper.service.ProductService;
 import minishopper.serviceimpl.ProductServiceImpl;
@@ -43,69 +44,68 @@ import minishopper.serviceimpl.ProductServiceImpl;
 public class ProductController {
 	
 	@Autowired
-	ProductService productService;
+	private ProductService productService;
 	
 	@GetMapping("/addImage")
 	public String saveImage() {
-//		String imagePath="C:\\Users\\2125292\\OneDrive - Cognizant\\Pictures\\Colgate Swarna.png";	
-//		byte[] data;
-//		try {
-//			File file=new File(imagePath);
-//			DiskFileItem fileItem=new DiskFileItem("file",	"image/png",false,file.getName(),(int)file.length(),file.getParentFile());			
-//			FileInputStream fis= new FileInputStream(file);
-//			MultipartFile image= new MockMultipartFile("fileItem",fileItem.getName(),"image/png",IOUtils.toByteArray(fis));
-//			String newImage=Base64.getEncoder().encodeToString(image.getBytes());
-//			Product p=productService.saveImage(image);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} 
+		String imagePath="C:\\Users\\2125292\\OneDrive - Cognizant\\Pictures\\ADISA 32LL.png";	
+		byte[] data;
+		try {
+			File file=new File(imagePath);
+			DiskFileItem fileItem=new DiskFileItem("file",	"image/png",false,file.getName(),(int)file.length(),file.getParentFile());			
+			FileInputStream fis= new FileInputStream(file);
+			MultipartFile image= new MockMultipartFile("fileItem",fileItem.getName(),"image/png",IOUtils.toByteArray(fis));
+			String newImage=Base64.getEncoder().encodeToString(image.getBytes());
+			Product p=productService.saveImage(image);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 //		
 //		
 //		Date date =new Date(0);
 //		System.out.println(date.getDate()+"  "+date.getMonth()+"  "+date.getYear());
 //		
-		LocalDateTime localDateTime=LocalDateTime.now();
-		
-		String firstHalf=""+localDateTime.getDayOfMonth()+localDateTime.getMonthValue()+localDateTime.getYear()+"-"+
-				localDateTime.getHour()+localDateTime.getMinute();
-		
-		String orderId=firstHalf+"-"+System.currentTimeMillis() / 1000L;
-		
-		String orderNumber= "ORD-" + firstHalf + localDateTime.getSecond();
-		
-		System.out.println(orderId);
-		System.out.println(orderNumber);
+//		LocalDateTime localDateTime=LocalDateTime.now();
+//		
+//		String firstHalf=""+localDateTime.getDayOfMonth()+localDateTime.getMonthValue()+localDateTime.getYear()+"-"+
+//				localDateTime.getHour()+localDateTime.getMinute();
+//		
+//		String orderId=firstHalf+"-"+System.currentTimeMillis() / 1000L;
+//		
+//		String orderNumber= "ORD-" + firstHalf + localDateTime.getSecond();
+//		
+//		System.out.println(orderId);
+//		System.out.println(orderNumber);
 		
 		return "image";
 	}
 	
 	@GetMapping("/listAllProducts")
-	public  ResponseEntity<List<Product>>  fetchAllProducts(){	
+	public  ResponseEntity<List<Product>>  fetchAllProducts() throws ResourceNotFoundException{	
 		List<Product> allProducts = productService.getAllProducts();
 		if(allProducts.size()==0) {
-			return new ResponseEntity<List<Product>>(allProducts,HttpStatus.NOT_FOUND); 
+			throw new ResourceNotFoundException("Products Not Found");
 		}
 		return new ResponseEntity<List<Product>>(allProducts,HttpStatus.OK); 
 	}
 	
-	@PostMapping("/productId/{id}")
-	public  ResponseEntity<Product> fetchSingleProduct(@PathVariable String id){
-		System.out.println("in single product "+ id);
-		Product product=productService.getByProductId(id);
+	@PostMapping("/productId/{productId}")
+	public  ResponseEntity<Product> fetchSingleProduct(@PathVariable String productId) throws ResourceNotFoundException{
+		Product product=productService.getByProductId(productId);
 		if(product==null) {
-			return new ResponseEntity<Product>(product,HttpStatus.NOT_FOUND);
+			throw new ResourceNotFoundException("Product Not Found");
 		}
 		return new ResponseEntity<Product>(product,HttpStatus.OK);
 	}
 	 
-	@PostMapping("/productCategory/{category}")
-	public  ResponseEntity<List<Product>> fetchProductsByCategory(@PathVariable String category){
-		List<Product> categoryProduct=productService.getAllProductsByCategory(category);
-		if(categoryProduct==null) {
-			return new ResponseEntity<List<Product>>(categoryProduct,HttpStatus.NOT_FOUND); 
-		}		
-		return new ResponseEntity<List<Product>>(categoryProduct,HttpStatus.OK);
-	}
+//	@PostMapping("/productCategory/{category}")
+//	public  ResponseEntity<List<Product>> fetchProductsByCategory(@PathVariable String category){
+//		List<Product> categoryProduct=productService.getAllProductsByCategory(category);
+//		if(categoryProduct==null) {
+//			return new ResponseEntity<List<Product>>(categoryProduct,HttpStatus.NOT_FOUND); 
+//		}		
+//		return new ResponseEntity<List<Product>>(categoryProduct,HttpStatus.OK);
+//	}
 
 }
