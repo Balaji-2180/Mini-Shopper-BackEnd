@@ -3,6 +3,7 @@ package minishopper.dto;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,17 +18,28 @@ import minishopper.entity.Product;
 @Builder
 public class CreateOrderRequestDto {
 	
+	@NotNull(message = "User id should not be null")
 	private String userId;
 	private String cartId;
+	@NotNull(message = "Order status should not be null")
 	private String orderStatus;
+	@NotNull(message = "Payment status should not be null")
 	private String paymentStatus;
+	@NotNull(message = "Order name should not be null")
 	private String orderName;
+	@NotNull(message = "First name should not be null")
 	private String firstName;
+	@NotNull(message = "Last name should not be null")
 	private String lastName;
+	@NotNull(message = "Shipping address should not be null")
 	private String shippingAddress;
+	@NotNull(message = "Pincode should not be null")
 	private String pinCode;
+	@NotNull(message = "City should not be null")
 	private String city;
+	@NotNull(message = "State should not be null")
 	private String state;
+	@NotNull(message = "Phone number should not be null")
 	private String phoneNumber;
 	private String productId;
 	private int quantity;
