@@ -1,5 +1,8 @@
 package minishopper.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +15,14 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UpdateOrderItemDto {
 	
-	@NotNull(message = "Order item id should not be null")
+	@Min(message = "Quantity should be less than 1", value = 1)
 	private int orderItemId;
-	@NotNull(message = "Quantity should not be null")
+	
+	@Min(message = "Quantity should be less than 1", value = 1)
+	@Max(message = "Quantity should not be greater than 50", value = 50)
 	private int quantity;
-	@NotNull(message = "Product id should not be null")
+	
+	@NotBlank(message = "Product id should not be null")
 	private String productId;
 
 }

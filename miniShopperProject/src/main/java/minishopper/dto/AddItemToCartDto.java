@@ -20,7 +20,7 @@ public class AddItemToCartDto {
 	@NotBlank(message = "ProductId should not be null")
 	private String productId;
 	
-	@Min(message = "Quantity should be greater than 1", value = 1)
+	@Min(message = "Quantity should not be less than 1", value = 1)
 	@Max(message = "Quantity should not be greater than 50", value = 50)
 	private int quantity;
 

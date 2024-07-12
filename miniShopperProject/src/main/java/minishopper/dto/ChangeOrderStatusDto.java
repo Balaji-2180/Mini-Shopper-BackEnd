@@ -2,6 +2,7 @@ package minishopper.dto;
 
 import java.util.Date;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,14 +17,17 @@ import lombok.Setter;
 @Builder
 public class ChangeOrderStatusDto {
 	
-    @NotNull(message = "Order id should not be null")
+	@NotBlank(message = "Order id should not be null")
 	private String orderId;
-    @NotNull(message = "Order status should not be null")
+	@NotBlank(message = "Order status should not be null")
 	private String orderStatus;
-    @NotNull(message = "Reason should not be null")
+	@NotBlank(message = "Reason should not be null")
 	private String reason;
-    @NotNull(message = "Expected delivery date should not be null")
+	@NotBlank(message = "Expected delivery date should not be null")
 	private String expectedDeliveryDate;
+	@NotBlank(message = "User id should not be null")
+	private String userId;
+    
     
 	@Override
 	public String toString() {

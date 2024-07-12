@@ -1,8 +1,9 @@
 package minishopper.dto;
 
 import java.util.List;
-import java.util.Map;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,19 +11,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import minishopper.entity.Product;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateOrderRequestDto {
+public class CreateSingleProductOrderRequestDto {
+
 	
 	@NotBlank(message = "User id should not be null")
 	private String userId;
-	@NotBlank(message = "Cart id should not be null")
-	private String cartId;
 	@NotBlank(message = "Order status should not be null")
 	private String orderStatus;
 	@NotBlank(message = "Payment status should not be null")
@@ -43,38 +42,11 @@ public class CreateOrderRequestDto {
 	private String state;
 	@NotBlank(message = "Phone number should not be null")
 	private String phoneNumber;
+	@NotBlank(message = "Product id should not be null")
+	private String productId;
 	
-
-
-	
-
-	public CreateOrderRequestDto(String userId, String cartId, String orderStatus, String paymentStatus,
-			String orderName, String shippingAddress, String pinCode, String city, String state, String phoneNumber) {
-		super();
-		this.userId = userId;
-		this.cartId = cartId;
-		this.orderStatus = orderStatus;
-		this.paymentStatus = paymentStatus;
-		this.orderName = orderName;
-		this.shippingAddress = shippingAddress;
-		this.pinCode = pinCode;
-		this.city = city;
-		this.state = state;
-		this.phoneNumber = phoneNumber;
-	}
-
-
-
-
-
-	@Override
-	public String toString() {
-		return "CreateOrderRequestDto [userId=" + userId + ", cartId=" + cartId + ", orderStatus=" + orderStatus
-				+ ", paymentStatus=" + paymentStatus + ", orderName=" + orderName + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", shippingAddress=" + shippingAddress + ", pinCode=" + pinCode + ", city="
-				+ city + ", state=" + state + ", phoneNumber=" + phoneNumber + "]";
-	}
-
-	
+	@Min(message = "Quantity should be less than 1", value = 1)
+	@Max(message = "Quantity should not be greater than 50", value = 50)
+	private int quantity;
 
 }
