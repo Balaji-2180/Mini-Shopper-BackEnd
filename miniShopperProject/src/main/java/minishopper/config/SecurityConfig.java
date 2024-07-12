@@ -1,6 +1,7 @@
 package minishopper.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,19 +22,33 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import minishopper.security.JwtAuthenticationEntryPoint;
 import minishopper.security.JwtAuthenticationFilter;
 import minishopper.service.CustomUserDetailsService;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+	
+	 @Autowired
+	    @Qualifier("handlerExceptionResolver")
+	    private HandlerExceptionResolver exceptionResolver;
 
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
 
+	//@Autowired
+	//private JwtAuthenticationFilter authenticationFilter;
+	
 	@Autowired
-	private JwtAuthenticationFilter authenticationFilter;
+	private JwtAuthenticationEntryPoint authenticationEntryPoint;
+	
+	  @Bean
+	    public JwtAuthenticationFilter jwtAuthFilter(){
+	        return new JwtAuthenticationFilter(exceptionResolver);
+	    }
 
 	@Bean
 	DaoAuthenticationProvider authenticationProvider() {
@@ -48,11 +63,11 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// System.out.println("in SecurityConfig securityFilterChain");
 		http.cors((cors) -> cors.configurationSource(corsFilter())).csrf().disable().authorizeHttpRequests()
-		//		.requestMatchers(HttpMethod.POST, "/users/**").permitAll()
 				.requestMatchers("/users/newUser").permitAll().requestMatchers("/users/loginUser").permitAll()
-				.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated().and().sessionManagement()
+				.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated().and()
+				.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
