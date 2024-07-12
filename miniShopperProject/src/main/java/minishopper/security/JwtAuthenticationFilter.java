@@ -8,18 +8,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 
 import java.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import minishopper.exception.InvalidInputException;
 import minishopper.service.CustomUserDetailsService;
 
-@Component
+//@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
@@ -27,6 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private CustomUserDetailsService userDetailService;
+	
+	  private HandlerExceptionResolver exceptionResolver;
+	  
+	  @Autowired
+	    public JwtAuthenticationFilter(HandlerExceptionResolver exceptionResolver) {
+	        this.exceptionResolver = exceptionResolver;
+	    }
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -35,22 +45,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String requestHeader = request.getHeader("Authorization");
 		String username = null;
 		String token = null;
-
+        try {
 		if (requestHeader != null && requestHeader.trim().startsWith("Bearer ")) {
 			token = requestHeader.substring(7);
-			try {
 				username = this.jwtHelper.getUsernameFromToken(token);
-			} catch (IllegalArgumentException ex) {
-				logger.info("Illegal argument while fetching username");
-				ex.printStackTrace();
-			} catch (ExpiredJwtException ex) {
-				logger.info("JWT Token is expired");
-				ex.printStackTrace();
-			} catch (MalformedJwtException ex) {
-				logger.info("Invalid token! Some changes has done in token");
-				ex.printStackTrace();
-			}
-		}
+			} 
+//			catch (IllegalArgumentException ex) {
+//				ex.printStackTrace();
+//			} 
+//			catch (ExpiredJwtException ex) {
+//				ex.printStackTrace();
+//			} catch (MalformedJwtException ex) {
+//				ex.printStackTrace();
+//			}
+//		}
 
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userDetailService.loadUserByUsername(username);
@@ -62,9 +70,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} else {
 				logger.info("Validation failed");
+				
 			}
 		}
 		filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException | SignatureException | InvalidInputException ex) {
+            exceptionResolver.resolveException(request, response, null, ex);
+        }
 	}
 
 }

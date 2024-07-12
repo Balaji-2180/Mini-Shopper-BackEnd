@@ -58,9 +58,8 @@ public class JwtHelper {
 
 		@SuppressWarnings("deprecation")
 		private String doGenerateToken(Map<String, Object> claims, String subject) {
-            System.out.println("in do generate Token jwt helper");
 			return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-					.setExpiration(new Date(System.currentTimeMillis() + 60 *60 *10 * 1000))
+					.setExpiration(new Date(System.currentTimeMillis() + 60 *60 *10 *1000))
 					.signWith(SignatureAlgorithm.HS256, secret).compact();
 		}
 
