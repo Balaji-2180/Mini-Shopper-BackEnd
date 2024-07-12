@@ -22,7 +22,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
+@Entity(name = "address")
 @Table(name = "Address")
 public class Address {
 	
@@ -34,8 +34,8 @@ public class Address {
 	@JoinColumn(name="user_id")
 	private User user;
 	
-	@Column(name = "address", nullable = false)
-	private String address;
+	@Column(name = "addressLine", nullable = false)
+	private String addressLine;
 	
 	@Column(name = "street", nullable = false)
 	private String street;
@@ -48,6 +48,9 @@ public class Address {
 	
 	@Column(name = "pinCode", nullable = false)
 	private String pinCode;
+	
+	@Column(name = "addressType", nullable = false)
+	private String addressType;
 
 
 	
