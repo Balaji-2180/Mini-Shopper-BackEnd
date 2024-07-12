@@ -44,6 +44,7 @@ import minishopper.entity.LoginData;
 import minishopper.entity.User;
 import minishopper.exception.InvalidInputException;
 import minishopper.exception.LoginException;
+import minishopper.exception.ResourceNotFoundException;
 import minishopper.exception.UnauthorizedException;
 import minishopper.repository.LoginDataRepository;
 import minishopper.repository.ProductRepository;
@@ -81,9 +82,9 @@ public class LoginController {
 	}
 
 	@PostMapping("/loginUser")
-	public ResponseEntity<JwtResponseDto> loginUser(@Valid @RequestBody LoginDto loginDto) throws UnauthorizedException{
+	public ResponseEntity<JwtResponseDto> loginUser(@Valid @RequestBody LoginDto loginDto) throws BadCredentialsException{
 		if(userService.checkUserId(loginDto.getUserId()) == null) {
-			throw new UnauthorizedException("Invalid UserId !");
+			throw new BadCredentialsException("Invalid UserId!");
 		}
 	    doAuthenticate(loginDto.getUserId(), loginDto.getPassword());
 	   
@@ -94,7 +95,7 @@ public class LoginController {
 		userDto.setUserId(userDetails.getUsername());
 		JwtResponseDto response = new JwtResponseDto();
 		if(!(loginDto.getRole().equalsIgnoreCase(userDto.getRole()))){
-				return new ResponseEntity<JwtResponseDto>(response, HttpStatus.UNAUTHORIZED);
+				throw new BadCredentialsException("Invalid Credentials!");
 		}
 		response = JwtResponseDto.builder().accessToken(jwtToken).refreshToken(refreshToken).user(userDto).build();
 		
@@ -103,14 +104,11 @@ public class LoginController {
 	}
 
 	@PostMapping("/{userId}")
-	public ResponseEntity<UserDto> getUserById(@PathVariable String userId) {
+	public ResponseEntity<UserDto> getUserById(@PathVariable String userId) throws ResourceNotFoundException{
 		if(!checkUserId(userId)) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		UserDto userDto = userService.fetchUserDetailsById(userId);
-		if(userDto == null) {
-			return new ResponseEntity<UserDto>(userDto, HttpStatus.NOT_FOUND);
-		}
 		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
 	}
 
@@ -120,19 +118,22 @@ public class LoginController {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		UserDto userDto = userService.updateUser(userId, address);
-		if(userDto == null) {
-			return new ResponseEntity<UserDto>(userDto, HttpStatus.NOT_MODIFIED);
+		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
+	}
+	
+	@PutMapping("/addAddress/{userId}")
+	public ResponseEntity<UserDto> addAddressDetails(@PathVariable String userId, @Valid @RequestBody AddressDto address) {
+		if(!checkUserId(userId)) {
+			throw new InvalidInputException("Invalid UserId !");
 		}
+		UserDto userDto = userService.addAddress(userId, address);
 		return new ResponseEntity<UserDto>(userDto, HttpStatus.OK);
 	}
 
-	private void doAuthenticate(String email, String password) {
+	
+	private void doAuthenticate(String email, String password) throws BadCredentialsException{
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
-		try {
-			manager.authenticate(authentication);
-		} catch (BadCredentialsException e) {
-			throw new UnauthorizedException("Wrong password!");
-		}
+		manager.authenticate(authentication);
 	}
 
 }

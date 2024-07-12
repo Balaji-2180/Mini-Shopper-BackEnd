@@ -27,14 +27,14 @@ public class RegisterController {
 	private UserService userService;
 
 	@PostMapping("/newUser")
-	public ResponseEntity saveUser(@Valid @RequestBody UserDto userDto) {
+	public ResponseEntity<String> saveUser(@Valid @RequestBody UserDto userDto) {
 		System.out.println("in register controller "+userDto.toString());
 		User loginUser = userService.checkUserId(userDto.getUserId());
 			if (loginUser == null) {
 				userService.saveUser(userDto);
-				return new ResponseEntity<>(HttpStatus.CREATED);
+				return new ResponseEntity<>("User Created Successfully", HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
+				return new ResponseEntity<>("The Email id already exist please register using another Email id",HttpStatus.ALREADY_REPORTED);
 			}
 	}
 
