@@ -13,6 +13,7 @@ import minishopper.dto.AddressDto;
 import minishopper.dto.UserDto;
 import minishopper.entity.Address;
 import minishopper.entity.User;
+import minishopper.exception.ResourceNotFoundException;
 import minishopper.repository.AddressRepository;
 import minishopper.repository.UserRepository;
 import minishopper.service.UserService;
@@ -51,9 +52,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto fetchUserDetailsById(String userId) {
+	public UserDto fetchUserDetailsById(String userId) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
+		if(user == null) {
+			throw new ResourceNotFoundException("User not found");
+		}
 		List<Address> allAddress = addressRepository.findByUser(user);
 		List<AddressDto> allAddressDto =  new ArrayList<>();
 		for(int i=0;i<allAddress.size();i++) {
@@ -63,19 +67,43 @@ public class UserServiceImpl implements UserService {
 		userDto.setAddress(allAddressDto);
 		return userDto;
 	}
+	
+	
+	
 
 	@Override
-	public UserDto updateUser(String userId, AddressDto addressDto) {
+	public UserDto updateUser(String userId, AddressDto addressDto) throws ResourceNotFoundException{
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
-		Address address = modelMapper.map(addressDto, Address.class);
-		address.setUser(user);
-		Address updatedAddress = addressRepository.save(address);
-		AddressDto updatedAddressDto = modelMapper.map(updatedAddress, AddressDto.class); 
+		if(user == null) {
+			throw new ResourceNotFoundException("User not found");
+		}
+		 addressRepository.updateAddressById(addressDto.getAddressId(), addressDto.getAddressLine(),
+				addressDto.getAddressType(), addressDto.getCity(),addressDto.getPinCode(), addressDto.getState(), addressDto.getStreet());
 		List<AddressDto> listOfAddress = new ArrayList<>();
-		listOfAddress.add(updatedAddressDto);
+		listOfAddress.add(addressDto);
 		UserDto savedUser = modelMapper.map( user , UserDto.class);
 		savedUser.setAddress(listOfAddress);
+		return savedUser;
+	}
+
+	@Override
+	public UserDto addAddress(String userId, AddressDto addressDto) throws ResourceNotFoundException{
+		// TODO Auto-generated method stub
+		User user = userRepository.findByUserId(userId);
+		if(user == null) {
+			throw new ResourceNotFoundException("User not found");
+		}
+		Address address = modelMapper.map(addressDto, Address.class);
+		address.setUser(user);
+		Address addedAddress = addressRepository.save(address);
+		
+		AddressDto addedAddressDto = modelMapper.map(addedAddress, AddressDto.class); 
+		List<AddressDto> listOfAddress = new ArrayList<>();
+		listOfAddress.add(addedAddressDto);
+		UserDto savedUser = modelMapper.map( user , UserDto.class);
+		savedUser.setAddress(listOfAddress);
+		
 		return savedUser;
 	}
 
