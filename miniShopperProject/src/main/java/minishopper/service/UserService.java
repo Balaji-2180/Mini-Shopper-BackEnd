@@ -14,5 +14,7 @@ public interface UserService {
 
 	public UserDto fetchUserDetailsById(String userId);
 
+	public UserDto addAddress(String userId, AddressDto address);
+	
 	public UserDto updateUser(String userId, AddressDto address);
 }
