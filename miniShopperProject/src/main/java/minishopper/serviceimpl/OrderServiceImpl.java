@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import minishopper.dto.ChangeOrderStatusDto;
+import minishopper.dto.CreateExcelOrderRequestDto;
 import minishopper.dto.CreateOrderRequestDto;
+import minishopper.dto.CreateSingleProductOrderRequestDto;
 import minishopper.dto.ExcelOrderDto;
 import minishopper.dto.OrderDto;
 import minishopper.dto.OrderItemDto;
@@ -56,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
 	private ModelMapper modelMapper;
 
 	@Override
-	public OrderDto createOrder(CreateOrderRequestDto orderRequest) {
+	public OrderDto createOrder(CreateOrderRequestDto orderRequest) throws ResourceNotFoundException{
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(orderRequest.getUserId());
 
@@ -83,10 +85,15 @@ public class OrderServiceImpl implements OrderService {
 				.state(orderRequest.getState()).pinCode(orderRequest.getPinCode()).user(user).build();
 
 		List<OrderItem> orderItems = new ArrayList<>();
+		int totalQuantity = 0;
 		for (CartItem cartItem : cartItems) {
 			Product product = cartItem.getProduct();
 			int requestedQuantity = cartItem.getQuantity();
 			int availableStock = product.getStock();
+			totalQuantity += requestedQuantity;
+			if(totalQuantity > 50) {
+				throw new ResourceNotFoundException("you cannot order more than 50 items in one order");
+			}
 
 			if (requestedQuantity > availableStock) {
 				continue;
@@ -114,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderDto createOrderSingleProduct(CreateOrderRequestDto orderRequest) {
+	public OrderDto createOrderSingleProduct(CreateSingleProductOrderRequestDto orderRequest) {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(orderRequest.getUserId());
 
@@ -157,7 +164,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderDto createOrderByExcelSheet(CreateOrderRequestDto orderRequest) throws ResourceNotFoundException {
+	public OrderDto createOrderByExcelSheet(CreateExcelOrderRequestDto orderRequest) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(orderRequest.getUserId());
 
@@ -228,8 +235,11 @@ public class OrderServiceImpl implements OrderService {
 		return orderDto;
 	}
 
-	public OrderDto fetchOrderByOrderId(String orderId) {
+	public OrderDto fetchOrderByOrderId(String orderId) throws ResourceNotFoundException{
 		Order order = orderRepository.findOrderByOrderId(orderId);
+		if(order == null) {
+			throw new ResourceNotFoundException("Order not found");
+		}
 		return modelMapper.map(order, OrderDto.class);
 	}
 
@@ -237,6 +247,9 @@ public class OrderServiceImpl implements OrderService {
 	public OrderItem removeOrderItemByOrderItemId(int orderItemId) {
 		// TODO Auto-generated method stub
 		OrderItem deletedItem = orderItemRepository.findById(orderItemId);
+		if(deletedItem == null) {
+			throw new ResourceNotFoundException("Order item not found");
+		}
 		orderItemRepository.deleteById(orderItemId);
 		return deletedItem;
 	}
@@ -253,10 +266,13 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderItemDto updateOrderItem(UpdateOrderItemDto updateOrderItem) {
+	public OrderItemDto updateOrderItem(UpdateOrderItemDto updateOrderItem) throws ResourceNotFoundException{
 		// TODO Auto-generated method stub
 		int quantity = updateOrderItem.getQuantity();
 		OrderItem orderItem = orderItemRepository.findById(updateOrderItem.getOrderItemId());
+		if(orderItem == null) {
+			throw new ResourceNotFoundException("Product not found");
+		}
 
 		orderItem.setQuantity(quantity);
 		Product product = productRepository.findByProductId(updateOrderItem.getProductId());
@@ -300,6 +316,9 @@ public class OrderServiceImpl implements OrderService {
 		if(orderStatus.equalsIgnoreCase("fulfill")){
 			paymentStatus = "COD";
 			Order order = orderRepository.findOrderByOrderId(orderId);
+			if(order == null) {
+				throw new ResourceNotFoundException("Order not found");
+			}
 			List<OrderItem> orderItems = order.getOrderItems();
 			for(OrderItem orderItem: orderItems) {
 				String productId = orderItem.getProduct().getProductId();

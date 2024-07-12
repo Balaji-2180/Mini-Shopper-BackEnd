@@ -15,6 +15,7 @@ import minishopper.entity.Cart;
 import minishopper.entity.CartItem;
 import minishopper.entity.Product;
 import minishopper.entity.User;
+import minishopper.exception.ResourceNotFoundException;
 import minishopper.repository.CartItemRepository;
 import minishopper.repository.CartRepository;
 import minishopper.repository.ProductRepository;
@@ -40,11 +41,14 @@ public class CartServiceImpl implements CartService {
 	private ModelMapper modelMapper;
 
 	@Override
-	public CartDto addItemToCart(String userId, AddItemToCartDto item) {
+	public CartDto addItemToCart(String userId, AddItemToCartDto item) throws ResourceNotFoundException{
 		// TODO Auto-generated method stub
 		int quantity = item.getQuantity();
 		String productId = item.getProductId();
 		Product product = productRepository.findByProductId(productId);
+		if(product == null) {
+			throw new ResourceNotFoundException("Product not found");
+		}
 		User user = userRepository.findByUserId(userId);
 		Cart c = cartRepository.findByUser(user);
 
@@ -77,10 +81,12 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public CartDto fetCartbyUser(String userId) {
+	public CartDto fetCartbyUser(String userId) throws ResourceNotFoundException{
 		User user = userRepository.findByUserId(userId);
 		Cart userCart = cartRepository.findByUser(user);
- 
+        if(userCart == null) {
+        	throw new ResourceNotFoundException("Cart not found");
+        }
 		return modelMapper.map(userCart, CartDto.class);
 	}
 
@@ -95,6 +101,9 @@ public class CartServiceImpl implements CartService {
 	public CartItem getCartItemById(int cartItemId) {
 		// TODO Auto-generated method stub
 		CartItem cartItem = cartItemRepository.findByCartItemId(cartItemId);
+		if(cartItem == null) {
+        	throw new ResourceNotFoundException("Cart item not found");
+        }
 		return cartItem;
 	}
 
