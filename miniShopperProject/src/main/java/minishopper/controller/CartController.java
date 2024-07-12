@@ -42,26 +42,20 @@ public class CartController {
 	}
 
 	@PostMapping("/user/{userId}")
-	public ResponseEntity<CartDto> getCartByUserId(@PathVariable String userId) throws InvalidInputException{
+	public ResponseEntity<CartDto> getCartByUserId(@PathVariable String userId) throws InvalidInputException, ResourceNotFoundException{
 		if(!checkUserId(userId)) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		CartDto userCart = cartService.fetCartbyUser(userId);
-		if (userCart == null) {
-			return new ResponseEntity<CartDto>(userCart, HttpStatus.NOT_FOUND);
-		}
 		return new ResponseEntity<CartDto>(userCart, HttpStatus.OK);
 	}
 
 	@PostMapping("/{userId}")
-	public ResponseEntity<CartDto> addItemToCart(@PathVariable String userId, @Valid @RequestBody AddItemToCartDto item) throws InvalidInputException{
+	public ResponseEntity<CartDto> addItemToCart(@PathVariable String userId, @Valid @RequestBody AddItemToCartDto item) throws InvalidInputException, ResourceNotFoundException{
 		if(!checkUserId(userId)) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		CartDto cartDto = cartService.addItemToCart(userId, item);
-		if(cartDto == null) {
-			return new ResponseEntity<CartDto>(cartDto, HttpStatus.NOT_MODIFIED);
-		}
 		return new ResponseEntity<CartDto>(cartDto, HttpStatus.OK);
 	}
 
@@ -78,10 +72,6 @@ public class CartController {
 		}
 		
 		cartService.deleteItemFromCart(userId, itemId);
-		CartItem cartItem = cartService.getCartItemById(itemId);
-		if(cartItem != null) {
-			return new ResponseEntity<String>("Unable to Delete Item", HttpStatus.NOT_MODIFIED);
-		}
 		return new ResponseEntity<String>("Deleted Successfully", HttpStatus.OK);
 	}
 
