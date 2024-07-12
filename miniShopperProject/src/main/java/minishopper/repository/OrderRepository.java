@@ -20,8 +20,8 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 	
 	@Transactional
 	@Modifying
-	@Query("update orders o set o.orderStatus = :orderStatus, o.reason = :reason, o.deliveredDate = :date where o.orderId = :orderId")
+	@Query("update orders o set o.orderStatus = :orderStatus, o.reason = :reason, o.deliveredDate = :date, o.paymentStatus = :paymentStatus where o.orderId = :orderId")
 	void updateOrderStatusByOrderId(@Param("orderStatus") String orderStatus, @Param("orderId") String orderId, 
-			                        @Param("reason") String reason, @Param("date") LocalDate date); 
+			                        @Param("reason") String reason, @Param("date") LocalDate date, @Param("paymentStatus") String paymentStatus); 
 
 }
