@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -43,13 +44,11 @@ import minishopper.dto.UserDto;
 import minishopper.entity.LoginData;
 import minishopper.entity.User;
 import minishopper.exception.InvalidInputException;
-import minishopper.exception.LoginException;
 import minishopper.exception.ResourceNotFoundException;
 import minishopper.exception.UnauthorizedException;
 import minishopper.repository.LoginDataRepository;
 import minishopper.repository.ProductRepository;
 import minishopper.repository.UserRepository;
-import minishopper.response.LoginResponse;
 import minishopper.security.JwtHelper;
 import minishopper.service.CustomUserDetailsService;
 import minishopper.service.LoginDataService;
@@ -57,7 +56,7 @@ import minishopper.service.UserService;
 import minishopper.serviceimpl.UserServiceImpl;
 
 
-@Controller
+@RestController
 @RequestMapping("/users")
 public class LoginController {
 	

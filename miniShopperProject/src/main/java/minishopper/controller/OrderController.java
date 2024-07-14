@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
@@ -42,12 +43,11 @@ import minishopper.entity.Product;
 import minishopper.entity.User;
 import minishopper.exception.InvalidInputException;
 import minishopper.exception.ResourceNotFoundException;
-import minishopper.response.RegisterResponse;
 import minishopper.service.OrderService;
 import minishopper.service.ProductService;
 import minishopper.service.UserService;
 
-@Controller
+@RestController
 @RequestMapping("/minishop")
 public class OrderController {
 
@@ -159,7 +159,9 @@ public class OrderController {
 		OrderDto savedOrder = new OrderDto();
 		if (totalNumberOfProducts > 50) {
 			throw new ResourceNotFoundException("you cannot order more than 50 items in one order");
-		} else {
+		}else if(totalNumberOfProducts == 0) {
+			throw new ResourceNotFoundException("you cannot order less than 1 item in one order");
+		}else {
 			savedOrder = orderService.createOrderByExcelSheet(orderRequest);
 		}
 		return new ResponseEntity<OrderDto>(savedOrder, HttpStatus.OK);

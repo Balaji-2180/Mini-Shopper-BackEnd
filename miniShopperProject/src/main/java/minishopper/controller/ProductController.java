@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import minishopper.entity.Product;
@@ -39,28 +40,28 @@ import minishopper.repository.ProductRepository;
 import minishopper.service.ProductService;
 import minishopper.serviceimpl.ProductServiceImpl;
 
-@Controller
+@RestController
 @RequestMapping("/products")
 public class ProductController {
 	
 	@Autowired
 	private ProductService productService;
 	
-	@GetMapping("/addImage")
-	public String saveImage() {
-		String imagePath="C:\\Users\\2125292\\OneDrive - Cognizant\\Pictures\\ADISA 32LL.png";	
-		byte[] data;
-		try {
-			File file=new File(imagePath);
-			DiskFileItem fileItem=new DiskFileItem("file",	"image/png",false,file.getName(),(int)file.length(),file.getParentFile());			
-			FileInputStream fis= new FileInputStream(file);
-			MultipartFile image= new MockMultipartFile("fileItem",fileItem.getName(),"image/png",IOUtils.toByteArray(fis));
-			String newImage=Base64.getEncoder().encodeToString(image.getBytes());
-			Product p=productService.saveImage(image);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+//	@GetMapping("/addImage")
+//	public String saveImage() {
+//		String imagePath="C:\\Users\\2125292\\OneDrive - Cognizant\\Pictures\\ADISA 32LL.png";	
+//		byte[] data;
+//		try {
+//			File file=new File(imagePath);
+//			DiskFileItem fileItem=new DiskFileItem("file",	"image/png",false,file.getName(),(int)file.length(),file.getParentFile());			
+//			FileInputStream fis= new FileInputStream(file);
+//			MultipartFile image= new MockMultipartFile("fileItem",fileItem.getName(),"image/png",IOUtils.toByteArray(fis));
+//			String newImage=Base64.getEncoder().encodeToString(image.getBytes());
+//			Product p=productService.saveImage(image);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} 
 //		
 //		
 //		Date date =new Date(0);
@@ -78,8 +79,8 @@ public class ProductController {
 //		System.out.println(orderId);
 //		System.out.println(orderNumber);
 		
-		return "image";
-	}
+//		return "image";
+//	}
 	
 	@GetMapping("/listAllProducts")
 	public  ResponseEntity<List<Product>>  fetchAllProducts() throws ResourceNotFoundException{	

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import minishopper.dto.AddItemToCartDto;
@@ -23,7 +24,7 @@ import minishopper.exception.UnauthorizedException;
 import minishopper.service.CartService;
 import minishopper.service.UserService;
 
-@Controller
+@RestController
 @RequestMapping("/carts")
 public class CartController {
 
@@ -70,7 +71,7 @@ public class CartController {
 		if(cartService.getCartItemById(itemId) == null) {
 			throw new ResourceNotFoundException("Cart Item Not Found");
 		}
-		
+		System.out.println("item id "+itemId);
 		cartService.deleteItemFromCart(userId, itemId);
 		return new ResponseEntity<String>("Deleted Successfully", HttpStatus.OK);
 	}
