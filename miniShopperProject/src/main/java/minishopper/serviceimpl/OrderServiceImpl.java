@@ -65,6 +65,9 @@ public class OrderServiceImpl implements OrderService {
 		Cart cart = cartRepository.findByCartId(orderRequest.getCartId());
 
 		List<CartItem> cartItems = cart.getItems();
+		if(cartItems.size() == 0) {
+			throw new ResourceNotFoundException("you cannot order less than 1 item in one order");
+		}
 
 //		String orderId = UUID.randomUUID().toString()
 		LocalDateTime localDateTime = LocalDateTime.now();

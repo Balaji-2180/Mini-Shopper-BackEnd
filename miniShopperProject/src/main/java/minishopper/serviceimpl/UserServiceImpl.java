@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
 			throw new ResourceNotFoundException("User not found");
 		}
 		 addressRepository.updateAddressById(addressDto.getAddressId(), addressDto.getAddressLine(),
-				addressDto.getAddressType(), addressDto.getCity(),addressDto.getPinCode(), addressDto.getState(), addressDto.getStreet());
+				addressDto.getAddressType(), addressDto.getCity(),addressDto.getPinCode(), addressDto.getState(), addressDto.getStreet(),addressDto.getPhoneNumber());
 		List<AddressDto> listOfAddress = new ArrayList<>();
 		listOfAddress.add(addressDto);
 		UserDto savedUser = modelMapper.map( user , UserDto.class);
