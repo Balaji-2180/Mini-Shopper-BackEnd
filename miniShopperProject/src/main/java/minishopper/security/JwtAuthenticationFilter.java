@@ -4,14 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 
 import java.io.IOException;
@@ -22,7 +19,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import minishopper.exception.InvalidInputException;
 import minishopper.service.CustomUserDetailsService;
 
-//@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
@@ -50,15 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			token = requestHeader.substring(7);
 				username = this.jwtHelper.getUsernameFromToken(token);
 			} 
-//			catch (IllegalArgumentException ex) {
-//				ex.printStackTrace();
-//			} 
-//			catch (ExpiredJwtException ex) {
-//				ex.printStackTrace();
-//			} catch (MalformedJwtException ex) {
-//				ex.printStackTrace();
-//			}
-//		}
 
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userDetailService.loadUserByUsername(username);

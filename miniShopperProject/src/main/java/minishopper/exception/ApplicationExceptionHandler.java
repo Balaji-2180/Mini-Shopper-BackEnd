@@ -75,38 +75,4 @@ public class ApplicationExceptionHandler {
 		return errorMap;
 	}
 
-//	
-//	
-//	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-//	@ExceptionHandler(UnauthorizedException.class)
-//	public String handleUnAuthorizedException(UnauthorizedException exception){
-//		return exception.getMessage();
-//	}
-//	
-//	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-//	@ExceptionHandler(InvalidInputException.class)
-//	public String handleInvalidInput(InvalidInputException exception){
-//		System.out.println("in exception handler ");
-//		System.out.println(exception.getMessage());
-//		return exception.getMessage();
-//	}
-//	
-//	@ResponseStatus(HttpStatus.NOT_FOUND)
-//	@ExceptionHandler(ResourceNotFoundException.class)
-//	public String handleResourceNotFoundException(ResourceNotFoundException exception){
-//		return exception.getMessage();
-//	}
-//	
-//
-//	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//	@ExceptionHandler(SQLException.class)
-//	public Map<String, String> handleSqlException(SQLException exception){
-//		
-//		Map<String, String> errorMap = new HashMap<>();
-////	    exception.forEach(error -> {
-////	    	errorMap.put(error.getCause(), error.getMessage());
-////	    });
-//		return errorMap;
-//	}
-
 }

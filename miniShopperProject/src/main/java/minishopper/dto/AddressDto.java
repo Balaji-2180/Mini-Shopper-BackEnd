@@ -1,6 +1,5 @@
 package minishopper.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import minishopper.entity.User;
 
 @Getter
 @Setter
@@ -38,5 +36,8 @@ public class AddressDto {
 	
 	@NotBlank(message = "Pincode should not be null")
 	private String pinCode;
+	
+	@NotBlank(message = "Phone number should not be null")
+	private String phoneNumber;
 
 }

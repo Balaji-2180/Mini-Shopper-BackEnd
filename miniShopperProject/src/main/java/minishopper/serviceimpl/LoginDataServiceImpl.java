@@ -11,7 +11,7 @@ import minishopper.service.LoginDataService;
 public class LoginDataServiceImpl implements LoginDataService {
 
 	@Autowired
-	LoginDataRepository loginDataRepo;
+	private LoginDataRepository loginDataRepo;
 
 	@Override
 	public LoginData saveLoginData(LoginData loginData) {

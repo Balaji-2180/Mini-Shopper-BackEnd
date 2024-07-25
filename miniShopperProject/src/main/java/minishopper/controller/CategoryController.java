@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,16 +28,16 @@ public class CategoryController {
 	private ProductService productService;
 
 	@GetMapping
-	public ResponseEntity<List<Category>> getAllCategories() throws ResourceNotFoundException{
+	public ResponseEntity<List<Category>> getAllCategories() throws ResourceNotFoundException {
 		List<Category> allCategories = categoryService.fetchAllCategories();
-		if(allCategories.size() == 0) {
+		if (allCategories.size() == 0) {
 			throw new ResourceNotFoundException("Categories Not Found");
 		}
 		return new ResponseEntity<List<Category>>(allCategories, HttpStatus.OK);
 	}
 
 	@GetMapping("/{categoryId}")
-	public ResponseEntity<Category> getCategoryById(@PathVariable String categoryId) throws ResourceNotFoundException{
+	public ResponseEntity<Category> getCategoryById(@PathVariable String categoryId) throws ResourceNotFoundException {
 		Category category = categoryService.fetchCategoryById(categoryId);
 		if (category == null) {
 			throw new ResourceNotFoundException("Category Not Found");
@@ -47,7 +46,8 @@ public class CategoryController {
 	}
 
 	@GetMapping("/{categoryId}/products")
-	public ResponseEntity<List<Product>> getProductsByCategoryId(@PathVariable String categoryId) throws ResourceNotFoundException{
+	public ResponseEntity<List<Product>> getProductsByCategoryId(@PathVariable String categoryId)
+			throws ResourceNotFoundException {
 		List<Product> categoryProducts = new ArrayList<>();
 		Category category = categoryService.fetchCategoryById(categoryId);
 		if (category == null) {

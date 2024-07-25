@@ -23,12 +23,12 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private AddressRepository addressRepository;
 
 	@Autowired
-	ModelMapper modelMapper;
+	private ModelMapper modelMapper;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -55,55 +55,53 @@ public class UserServiceImpl implements UserService {
 	public UserDto fetchUserDetailsById(String userId) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
-		if(user == null) {
+		if (user == null) {
 			throw new ResourceNotFoundException("User not found");
 		}
 		List<Address> allAddress = addressRepository.findByUser(user);
-		List<AddressDto> allAddressDto =  new ArrayList<>();
-		for(int i=0;i<allAddress.size();i++) {
+		List<AddressDto> allAddressDto = new ArrayList<>();
+		for (int i = 0; i < allAddress.size(); i++) {
 			allAddressDto.add(modelMapper.map(allAddress.get(i), AddressDto.class));
 		}
 		UserDto userDto = modelMapper.map(user, UserDto.class);
 		userDto.setAddress(allAddressDto);
 		return userDto;
 	}
-	
-	
-	
 
 	@Override
-	public UserDto updateUser(String userId, AddressDto addressDto) throws ResourceNotFoundException{
+	public UserDto updateUser(String userId, AddressDto addressDto) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
-		if(user == null) {
+		if (user == null) {
 			throw new ResourceNotFoundException("User not found");
 		}
-		 addressRepository.updateAddressById(addressDto.getAddressId(), addressDto.getAddressLine(),
-				addressDto.getAddressType(), addressDto.getCity(),addressDto.getPinCode(), addressDto.getState(), addressDto.getStreet(),addressDto.getPhoneNumber());
+		addressRepository.updateAddressById(addressDto.getAddressId(), addressDto.getAddressLine(),
+				addressDto.getAddressType(), addressDto.getCity(), addressDto.getPinCode(), addressDto.getState(),
+				addressDto.getStreet(), addressDto.getPhoneNumber());
 		List<AddressDto> listOfAddress = new ArrayList<>();
 		listOfAddress.add(addressDto);
-		UserDto savedUser = modelMapper.map( user , UserDto.class);
+		UserDto savedUser = modelMapper.map(user, UserDto.class);
 		savedUser.setAddress(listOfAddress);
 		return savedUser;
 	}
 
 	@Override
-	public UserDto addAddress(String userId, AddressDto addressDto) throws ResourceNotFoundException{
+	public UserDto addAddress(String userId, AddressDto addressDto) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
-		if(user == null) {
+		if (user == null) {
 			throw new ResourceNotFoundException("User not found");
 		}
 		Address address = modelMapper.map(addressDto, Address.class);
 		address.setUser(user);
 		Address addedAddress = addressRepository.save(address);
-		
-		AddressDto addedAddressDto = modelMapper.map(addedAddress, AddressDto.class); 
+
+		AddressDto addedAddressDto = modelMapper.map(addedAddress, AddressDto.class);
 		List<AddressDto> listOfAddress = new ArrayList<>();
 		listOfAddress.add(addedAddressDto);
-		UserDto savedUser = modelMapper.map( user , UserDto.class);
+		UserDto savedUser = modelMapper.map(user, UserDto.class);
 		savedUser.setAddress(listOfAddress);
-		
+
 		return savedUser;
 	}
 

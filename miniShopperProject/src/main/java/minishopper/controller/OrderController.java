@@ -56,58 +56,60 @@ public class OrderController {
 
 	@Autowired
 	private ProductService productService;
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	public boolean checkNormalUserId(String userId) {
 		User loginUser = userService.checkUserId(userId);
-		if(loginUser == null) {
+		if (loginUser == null) {
 			return false;
-		}else if(loginUser.getRole().equalsIgnoreCase("user")){
+		} else if (loginUser.getRole().equalsIgnoreCase("user")) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public boolean checkShopkeeperUserId(String userId) {
 		User loginUser = userService.checkUserId(userId);
-		if(loginUser == null) {
+		if (loginUser == null) {
 			return false;
-		}else if(loginUser.getRole().equalsIgnoreCase("shopkeeper")){
+		} else if (loginUser.getRole().equalsIgnoreCase("shopkeeper")) {
 			return true;
 		}
 		return false;
 	}
 
 	@PostMapping("/placeOrder")
-	public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderRequestDto orderRequest) throws InvalidInputException, ResourceNotFoundException{
-	//	System.out.println("in order controller");
-		if(!checkNormalUserId(orderRequest.getUserId())) {
+	public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderRequestDto orderRequest)
+			throws InvalidInputException, ResourceNotFoundException {
+		if (!checkNormalUserId(orderRequest.getUserId())) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		OrderDto ordered = orderService.createOrder(orderRequest);
 		return new ResponseEntity<OrderDto>(ordered, HttpStatus.OK);
 	}
- 
+
 	@PostMapping("/singleProduct")
-	public ResponseEntity<OrderDto> createOrderForSingleProduct(@Valid @RequestBody CreateSingleProductOrderRequestDto orderRequest) throws InvalidInputException {
-		if(!checkNormalUserId(orderRequest.getUserId())) {
+	public ResponseEntity<OrderDto> createOrderForSingleProduct(
+			@Valid @RequestBody CreateSingleProductOrderRequestDto orderRequest) throws InvalidInputException {
+		if (!checkNormalUserId(orderRequest.getUserId())) {
 			throw new InvalidInputException("Invalid UserId !");
-		} 
+		}
 		OrderDto ordered = orderService.createOrderSingleProduct(orderRequest);
 		return new ResponseEntity<OrderDto>(ordered, HttpStatus.OK);
 	}
 
 	@PostMapping("/updateOrderItem")
-	public ResponseEntity<OrderItemDto> updateItemInOrdere(@Valid @RequestBody UpdateOrderItemDto updateOrderItem) throws ResourceNotFoundException{
+	public ResponseEntity<OrderItemDto> updateItemInOrdere(@Valid @RequestBody UpdateOrderItemDto updateOrderItem)
+			throws ResourceNotFoundException {
 		OrderItemDto updatedOrder = orderService.updateOrderItem(updateOrderItem);
 		return new ResponseEntity<OrderItemDto>(updatedOrder, HttpStatus.OK);
 	}
 
 	@PostMapping("/user/{userId}")
-	public ResponseEntity<List<OrderDto>> getOrderByUserId(@PathVariable String userId) throws InvalidInputException{
-		if(!checkNormalUserId(userId)) {
+	public ResponseEntity<List<OrderDto>> getOrderByUserId(@PathVariable String userId) throws InvalidInputException {
+		if (!checkNormalUserId(userId)) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		List<OrderDto> orders = orderService.fetchOrderByUser(userId);
@@ -118,82 +120,74 @@ public class OrderController {
 	}
 
 	@PostMapping("/{orderId}")
-	public ResponseEntity<OrderDto> getOrderByOrderId(@PathVariable String orderId) throws ResourceNotFoundException{
+	public ResponseEntity<OrderDto> getOrderByOrderId(@PathVariable String orderId) throws ResourceNotFoundException {
 		OrderDto order = orderService.fetchOrderByOrderId(orderId);
 		return new ResponseEntity<OrderDto>(order, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/item/{orderItemId}")
-	public ResponseEntity<String> deleteItem(@PathVariable int orderItemId) throws ResourceNotFoundException{
+	public ResponseEntity<String> deleteItem(@PathVariable int orderItemId) throws ResourceNotFoundException {
 		OrderItem orderItem = orderService.removeOrderItemByOrderItemId(orderItemId);
 		orderService.updateTotalPrice(orderItem);
-		
 		OrderItem item = orderService.getOrderItemById(orderItemId);
-		
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
 	}
 
 	@GetMapping("/excel")
 	public ResponseEntity<List<Product>> fetchAllProductsForExcel() {
-		System.out.println("in all products excel");
 		List<Product> availableProducts = productService.getAllAvailableProduct();
-		if(availableProducts.size() == 0) {
+		if (availableProducts.size() == 0) {
 			return new ResponseEntity<List<Product>>(availableProducts, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<List<Product>>(availableProducts, HttpStatus.OK);
 	}
 
-	@PostMapping("/excel")
+	@PostMapping("/excelOrder")
 	public ResponseEntity<OrderDto> orderExcelData(@Valid @RequestBody CreateExcelOrderRequestDto orderRequest)
 			throws ResourceNotFoundException, InvalidInputException {
-		if(!checkNormalUserId(orderRequest.getUserId())) {
+		if (!checkNormalUserId(orderRequest.getUserId())) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		int totalNumberOfProducts = 0;
 		List<ExcelOrderDto> products = orderRequest.getProducts();
 		for (ExcelOrderDto p : products) {
-			if (p.getQuantity() > 0) { 
+			if (p.getQuantity() > 0) {
 				totalNumberOfProducts += p.getQuantity();
 			}
 		}
 		OrderDto savedOrder = new OrderDto();
 		if (totalNumberOfProducts > 50) {
 			throw new ResourceNotFoundException("you cannot order more than 50 items in one order");
-		}else if(totalNumberOfProducts == 0) {
+		} else if (totalNumberOfProducts == 0) {
 			throw new ResourceNotFoundException("you cannot order less than 1 item in one order");
-		}else {
+		} else {
 			savedOrder = orderService.createOrderByExcelSheet(orderRequest);
 		}
 		return new ResponseEntity<OrderDto>(savedOrder, HttpStatus.OK);
 	}
-	
-	
+
 	@PostMapping("/getAllOrders/{userId}")
-	public ResponseEntity<List<OrderDto>> getAllOrdersForShopkeeper(@PathVariable String userId)  throws InvalidInputException, ResourceNotFoundException{
-		if(!checkShopkeeperUserId(userId)) {
+	public ResponseEntity<List<OrderDto>> getAllOrdersForShopkeeper(@PathVariable String userId)
+			throws InvalidInputException, ResourceNotFoundException {
+		if (!checkShopkeeperUserId(userId)) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
 		List<OrderDto> orders = orderService.fetchAllOrders();
-//		List<OrderDto> orders = new ArrayList<>();
-		if(orders.size() == 0){
-			throw new ResourceNotFoundException("No orders found");		
+		if (orders.size() == 0) {
+			throw new ResourceNotFoundException("No orders found");
 		}
 		return new ResponseEntity<List<OrderDto>>(orders, HttpStatus.OK);
 	}
-	 
-	
+
 	@PostMapping("/changeOrderStatus")
-	public ResponseEntity<OrderDto> changeOrderStatusDto(@Valid @RequestBody ChangeOrderStatusDto changeOrderStatusDto) throws InvalidInputException, ResourceNotFoundException{
-		System.out.println("in chage status controller");
-		if(!checkShopkeeperUserId(changeOrderStatusDto.getUserId())){
+	public ResponseEntity<OrderDto> changeOrderStatusDto(@Valid @RequestBody ChangeOrderStatusDto changeOrderStatusDto)
+			throws InvalidInputException, ResourceNotFoundException {
+		if (!checkShopkeeperUserId(changeOrderStatusDto.getUserId())) {
 			throw new InvalidInputException("Invalid UserId !");
 		}
-		System.out.println(changeOrderStatusDto.toString());
 		orderService.updateOrderStatus(changeOrderStatusDto);
 		OrderDto updatedOrder = orderService.fetchOrderByOrderId(changeOrderStatusDto.getOrderId());
 		return new ResponseEntity<OrderDto>(updatedOrder, HttpStatus.OK);
 	}
-	
-	
 
 }

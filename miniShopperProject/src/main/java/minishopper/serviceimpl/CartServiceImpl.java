@@ -26,27 +26,27 @@ import minishopper.service.CartService;
 public class CartServiceImpl implements CartService {
 
 	@Autowired
-	CartRepository cartRepository;
+	private CartRepository cartRepository;
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	ProductRepository productRepository;
+	private ProductRepository productRepository;
 
 	@Autowired
-	CartItemRepository cartItemRepository;
+	private CartItemRepository cartItemRepository;
 
 	@Autowired
 	private ModelMapper modelMapper;
 
 	@Override
-	public CartDto addItemToCart(String userId, AddItemToCartDto item) throws ResourceNotFoundException{
+	public CartDto addItemToCart(String userId, AddItemToCartDto item) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		int quantity = item.getQuantity();
 		String productId = item.getProductId();
 		Product product = productRepository.findByProductId(productId);
-		if(product == null) {
+		if (product == null) {
 			throw new ResourceNotFoundException("Product not found");
 		}
 		User user = userRepository.findByUserId(userId);
@@ -81,12 +81,12 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public CartDto fetCartbyUser(String userId) throws ResourceNotFoundException{
+	public CartDto fetCartbyUser(String userId) throws ResourceNotFoundException {
 		User user = userRepository.findByUserId(userId);
 		Cart userCart = cartRepository.findByUser(user);
-        if(userCart == null) {
-        	throw new ResourceNotFoundException("Cart not found");
-        }
+		if (userCart == null) {
+			throw new ResourceNotFoundException("Cart not found");
+		}
 		return modelMapper.map(userCart, CartDto.class);
 	}
 
@@ -101,9 +101,9 @@ public class CartServiceImpl implements CartService {
 	public CartItem getCartItemById(int cartItemId) {
 		// TODO Auto-generated method stub
 		CartItem cartItem = cartItemRepository.findByCartItemId(cartItemId);
-		if(cartItem == null) {
-        	throw new ResourceNotFoundException("Cart item not found");
-        }
+		if (cartItem == null) {
+			throw new ResourceNotFoundException("Cart item not found");
+		}
 		return cartItem;
 	}
 

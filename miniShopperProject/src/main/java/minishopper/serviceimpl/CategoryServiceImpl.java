@@ -13,7 +13,7 @@ import minishopper.service.CategoryService;
 public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
-	CategoryRepository categoryRepository;
+	private CategoryRepository categoryRepository;
 
 	@Override
 	public List<Category> fetchAllCategories() {
@@ -22,9 +22,9 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Category fetchCategoryById(String CategoryId) {
+	public Category fetchCategoryById(String categoryId) {
 		// TODO Auto-generated method stub
-		return categoryRepository.findByCategoryId(CategoryId);
+		return categoryRepository.findByCategoryId(categoryId);
 	}
 
 }

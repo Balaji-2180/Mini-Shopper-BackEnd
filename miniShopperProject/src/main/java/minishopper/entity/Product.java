@@ -1,11 +1,11 @@
 package minishopper.entity;
 
-import java.util.Arrays;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity(name ="product")
-@Table(name="product")
+@Table(name="product", indexes= {@Index(name="idx_product_id", columnList = "product_id")})
 public class Product {
 	
 	@Id

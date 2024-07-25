@@ -1,13 +1,12 @@
 package minishopper.entity;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -23,7 +22,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity(name = "address")
-@Table(name = "Address")
+@Table(name = "Address", indexes= {@Index(name="idx_address_id", columnList = "address_id")})
 public class Address {
 	
 	@Id
@@ -51,6 +50,9 @@ public class Address {
 	
 	@Column(name = "addressType", nullable = false)
 	private String addressType;
+	
+	@Column(name = "phoneNumber", nullable = false)
+	private String phoneNumber;
 
 
 	

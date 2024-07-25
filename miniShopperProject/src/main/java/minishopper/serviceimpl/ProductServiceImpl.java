@@ -16,13 +16,13 @@ import minishopper.service.ProductService;
 public class ProductServiceImpl implements ProductService {
 
 	@Autowired
-	ProductRepository productRepository;
+	private ProductRepository productRepository;
 
 	@Override
 	public List<Product> getAllProducts() {
 		return productRepository.findAll();
 	}
- 
+
 	@Override
 	public Product getByProductId(String productId) {
 		return productRepository.findByProductId(productId);
@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return productRepository.findAvailableProducts();
 	}
-	
+
 	@Override
 	public Product saveImage(MultipartFile image) {
 		// TODO Auto-generated method stub

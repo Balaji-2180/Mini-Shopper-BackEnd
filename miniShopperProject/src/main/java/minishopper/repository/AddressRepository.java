@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import jakarta.transaction.Transactional;
-import minishopper.dto.AddressDto;
 import minishopper.entity.Address;
 import minishopper.entity.User;
 
@@ -17,9 +16,9 @@ public interface AddressRepository extends JpaRepository<Address, Integer>{
       
   	@Transactional
   	@Modifying
-  	@Query("update address a set a.addressLine = :addressLine, a.addressType = :addressType, a.city = :city, a.pinCode = :pinCode, a.state = :state, a.street = :street  where a.addressId = :addressId")
+  	@Query("update address a set a.addressLine = :addressLine, a.addressType = :addressType, a.city = :city, a.pinCode = :pinCode, a.state = :state, a.street = :street,  a.phoneNumber = :phoneNumber where a.addressId = :addressId")
   	void updateAddressById(@Param("addressId") int addressId, @Param("addressLine") String addressLine,@Param("addressType") String addressType,  
-  			                        @Param("city") String city, @Param("pinCode") String pinCode, @Param("state") String state,@Param("street") String street); 
+  			                        @Param("city") String city, @Param("pinCode") String pinCode, @Param("state") String state,@Param("street") String street,@Param("phoneNumber") String phoneNumber); 
 
 
 }

@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -40,7 +37,7 @@ import minishopper.service.OrderService;
 public class OrderServiceImpl implements OrderService {
 
 	@Autowired
-	OrderRepository orderRepository;
+	private OrderRepository orderRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -52,24 +49,22 @@ public class OrderServiceImpl implements OrderService {
 	private ProductRepository productRepository;
 
 	@Autowired
-	OrderItemRepository orderItemRepository;
+	private OrderItemRepository orderItemRepository;
 
 	@Autowired
 	private ModelMapper modelMapper;
 
 	@Override
-	public OrderDto createOrder(CreateOrderRequestDto orderRequest) throws ResourceNotFoundException{
+	public OrderDto createOrder(CreateOrderRequestDto orderRequest) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(orderRequest.getUserId());
 
 		Cart cart = cartRepository.findByCartId(orderRequest.getCartId());
 
 		List<CartItem> cartItems = cart.getItems();
-		if(cartItems.size() == 0) {
+		if (cartItems.size() == 0) {
 			throw new ResourceNotFoundException("you cannot order less than 1 item in one order");
 		}
-
-//		String orderId = UUID.randomUUID().toString()
 		LocalDateTime localDateTime = LocalDateTime.now();
 
 		String firstHalf = "" + localDateTime.getDayOfMonth() + localDateTime.getMonthValue() + localDateTime.getYear()
@@ -78,14 +73,14 @@ public class OrderServiceImpl implements OrderService {
 		String orderId = firstHalf + "-" + System.currentTimeMillis() / 1000L;
 
 		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
-//		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
 		AtomicReference<Double> totalOrderAmount = new AtomicReference<Double>((double) 0);
 
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName()).firstName(orderRequest.getFirstName())
-				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
-				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
-				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
-				.state(orderRequest.getState()).pinCode(orderRequest.getPinCode()).user(user).build();
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName())
+				.firstName(orderRequest.getFirstName()).lastName(orderRequest.getLastName())
+				.phoneNumber(orderRequest.getPhoneNumber()).orderStatus(orderRequest.getOrderStatus())
+				.paymentStatus(orderRequest.getPaymentStatus()).shippingAddress(orderRequest.getShippingAddress())
+				.city(orderRequest.getCity()).state(orderRequest.getState()).pinCode(orderRequest.getPinCode())
+				.user(user).build();
 
 		List<OrderItem> orderItems = new ArrayList<>();
 		int totalQuantity = 0;
@@ -94,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
 			int requestedQuantity = cartItem.getQuantity();
 			int availableStock = product.getStock();
 			totalQuantity += requestedQuantity;
-			if(totalQuantity > 50) {
+			if (totalQuantity > 50) {
 				throw new ResourceNotFoundException("you cannot order more than 50 items in one order");
 			}
 
@@ -107,16 +102,12 @@ public class OrderServiceImpl implements OrderService {
 					.order(order).build();
 
 			totalOrderAmount.set(totalOrderAmount.get() + orderItem.getTotalPrice());
-
-//			product.setStock(availableStock - requestedQuantity);
-//			productRepository.save(product);
 			orderItems.add(orderItem);
 		}
 		order.setOrderItems(orderItems);
 		order.setOrderAmount(totalOrderAmount.get());
 		System.out.println();
 		Order savedOrder = orderRepository.save(order);
-		// System.out.println("saved order "+savedOrder);
 		cart.getItems().clear();
 		cartRepository.save(cart);
 
@@ -129,9 +120,6 @@ public class OrderServiceImpl implements OrderService {
 		User user = userRepository.findByUserId(orderRequest.getUserId());
 
 		Product product = productRepository.findByProductId(orderRequest.getProductId());
-
-//		String orderId = UUID.randomUUID().toString();
-//		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
 		LocalDateTime localDateTime = LocalDateTime.now();
 
 		String firstHalf = "" + localDateTime.getDayOfMonth() + localDateTime.getMonthValue() + localDateTime.getYear()
@@ -141,11 +129,12 @@ public class OrderServiceImpl implements OrderService {
 
 		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
 
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName()).firstName(orderRequest.getFirstName())
-				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
-				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
-				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
-				.state(orderRequest.getState()).pinCode(orderRequest.getPinCode()).user(user).build();
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName())
+				.firstName(orderRequest.getFirstName()).lastName(orderRequest.getLastName())
+				.phoneNumber(orderRequest.getPhoneNumber()).orderStatus(orderRequest.getOrderStatus())
+				.paymentStatus(orderRequest.getPaymentStatus()).shippingAddress(orderRequest.getShippingAddress())
+				.city(orderRequest.getCity()).state(orderRequest.getState()).pinCode(orderRequest.getPinCode())
+				.user(user).build();
 
 		List<OrderItem> orderItems = new ArrayList<>();
 
@@ -159,9 +148,6 @@ public class OrderServiceImpl implements OrderService {
 		order.setOrderAmount(orderItems.get(0).getTotalPrice());
 
 		Order savedOrder = orderRepository.save(order);
-
-//		product.setStock(product.getStock() - orderRequest.getQuantity());
-//		productRepository.save(product);
 
 		return modelMapper.map(savedOrder, OrderDto.class);
 	}
@@ -177,9 +163,6 @@ public class OrderServiceImpl implements OrderService {
 
 		List<OrderItem> orderable = new ArrayList<>();
 
-//		String orderId = UUID.randomUUID().toString();
-//		String orderNumber = "ORD-" + System.currentTimeMillis() / 1000L + "-" + new Random().nextInt(1000);
-
 		LocalDateTime localDateTime = LocalDateTime.now();
 
 		String firstHalf = "" + localDateTime.getDayOfMonth() + localDateTime.getMonthValue() + localDateTime.getYear()
@@ -189,11 +172,12 @@ public class OrderServiceImpl implements OrderService {
 
 		String orderNumber = "ORD-" + firstHalf + localDateTime.getSecond();
 
-		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName()).firstName(orderRequest.getFirstName())
-				.lastName(orderRequest.getLastName()).phoneNumber(orderRequest.getPhoneNumber())
-				.orderStatus(orderRequest.getOrderStatus()).paymentStatus(orderRequest.getPaymentStatus())
-				.shippingAddress(orderRequest.getShippingAddress()).city(orderRequest.getCity())
-				.state(orderRequest.getState()).pinCode(orderRequest.getPinCode()).user(user).build();
+		Order order = Order.builder().orderId(orderId).orderNumber(orderNumber).orderName(orderRequest.getOrderName())
+				.firstName(orderRequest.getFirstName()).lastName(orderRequest.getLastName())
+				.phoneNumber(orderRequest.getPhoneNumber()).orderStatus(orderRequest.getOrderStatus())
+				.paymentStatus(orderRequest.getPaymentStatus()).shippingAddress(orderRequest.getShippingAddress())
+				.city(orderRequest.getCity()).state(orderRequest.getState()).pinCode(orderRequest.getPinCode())
+				.user(user).build();
 
 		double totalPrice = 0;
 
@@ -207,7 +191,6 @@ public class OrderServiceImpl implements OrderService {
 					throw new ResourceNotFoundException("Product Not Found");
 				} else {
 					if (product.getStock() < requestedQuantity) {
-						// return null; //return out of stock
 						throw new ResourceNotFoundException("Product is out of stock");
 					}
 					products.add(product);
@@ -218,8 +201,6 @@ public class OrderServiceImpl implements OrderService {
 							.order(order).build();
 					orderable.add(orderItem);
 					totalPrice += orderItem.getTotalPrice();
-//					product.setStock(product.getStock() - requestedQuantity);
-//					productRepository.save(product);
 				}
 			}
 		}
@@ -238,9 +219,9 @@ public class OrderServiceImpl implements OrderService {
 		return orderDto;
 	}
 
-	public OrderDto fetchOrderByOrderId(String orderId) throws ResourceNotFoundException{
+	public OrderDto fetchOrderByOrderId(String orderId) throws ResourceNotFoundException {
 		Order order = orderRepository.findOrderByOrderId(orderId);
-		if(order == null) {
+		if (order == null) {
 			throw new ResourceNotFoundException("Order not found");
 		}
 		return modelMapper.map(order, OrderDto.class);
@@ -250,7 +231,7 @@ public class OrderServiceImpl implements OrderService {
 	public OrderItem removeOrderItemByOrderItemId(int orderItemId) {
 		// TODO Auto-generated method stub
 		OrderItem deletedItem = orderItemRepository.findById(orderItemId);
-		if(deletedItem == null) {
+		if (deletedItem == null) {
 			throw new ResourceNotFoundException("Order item not found");
 		}
 		orderItemRepository.deleteById(orderItemId);
@@ -269,11 +250,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderItemDto updateOrderItem(UpdateOrderItemDto updateOrderItem) throws ResourceNotFoundException{
+	public OrderItemDto updateOrderItem(UpdateOrderItemDto updateOrderItem) throws ResourceNotFoundException {
 		// TODO Auto-generated method stub
 		int quantity = updateOrderItem.getQuantity();
 		OrderItem orderItem = orderItemRepository.findById(updateOrderItem.getOrderItemId());
-		if(orderItem == null) {
+		if (orderItem == null) {
 			throw new ResourceNotFoundException("Product not found");
 		}
 
@@ -309,35 +290,32 @@ public class OrderServiceImpl implements OrderService {
 		// TODO Auto-generated method stub
 		String orderStatus = changeOrderStatusDto.getOrderStatus();
 		String orderId = changeOrderStatusDto.getOrderId();
-		String reason=changeOrderStatusDto.getReason();
-		//String date=changeOrderStatus.getExpectedDeliveryDate();
+		String reason = changeOrderStatusDto.getReason();
 		LocalDate localDate = LocalDate.parse(changeOrderStatusDto.getExpectedDeliveryDate());
-//		System.out.println(localDate);
-//		System.out.println(orderStatus+"  "+orderId);
 		String paymentStatus = "NOT PAID";
-		
-		if(orderStatus.equalsIgnoreCase("fulfill")){
+
+		if (orderStatus.equalsIgnoreCase("fulfill")) {
 			paymentStatus = "COD";
 			Order order = orderRepository.findOrderByOrderId(orderId);
-			if(order == null) {
+			if (order == null) {
 				throw new ResourceNotFoundException("Order not found");
 			}
 			List<OrderItem> orderItems = order.getOrderItems();
-			for(OrderItem orderItem: orderItems) {
+			for (OrderItem orderItem : orderItems) {
 				String productId = orderItem.getProduct().getProductId();
 				int quantity = orderItem.getQuantity();
 				int newQuantity = 0;
 				int stock = orderItem.getProduct().getStock();
-				if(stock > quantity){
+				if (stock > quantity) {
 					newQuantity = stock - quantity;
 				}
-				
+
 				productRepository.updateStock(productId, newQuantity);
 			}
 		}
-		
+
 		orderRepository.updateOrderStatusByOrderId(orderStatus, orderId, reason, localDate, paymentStatus);
-		
+
 	}
 
 	@Override
@@ -345,6 +323,6 @@ public class OrderServiceImpl implements OrderService {
 		// TODO Auto-generated method stub
 		OrderItem orderItem = orderItemRepository.findById(orderItemId);
 		return orderItem;
-	} 
- 
+	}
+
 }

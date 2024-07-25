@@ -31,24 +31,21 @@ import minishopper.service.CustomUserDetailsService;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-	
-	 @Autowired
-	    @Qualifier("handlerExceptionResolver")
-	    private HandlerExceptionResolver exceptionResolver;
+
+	@Autowired
+	@Qualifier("handlerExceptionResolver")
+	private HandlerExceptionResolver exceptionResolver;
 
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
 
-	//@Autowired
-	//private JwtAuthenticationFilter authenticationFilter;
-	
 	@Autowired
 	private JwtAuthenticationEntryPoint authenticationEntryPoint;
-	
-	  @Bean
-	    public JwtAuthenticationFilter jwtAuthFilter(){
-	        return new JwtAuthenticationFilter(exceptionResolver);
-	    }
+
+	@Bean
+	public JwtAuthenticationFilter jwtAuthFilter() {
+		return new JwtAuthenticationFilter(exceptionResolver);
+	}
 
 	@Bean
 	DaoAuthenticationProvider authenticationProvider() {
@@ -61,11 +58,11 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		// System.out.println("in SecurityConfig securityFilterChain");
 		http.cors((cors) -> cors.configurationSource(corsFilter())).csrf().disable().authorizeHttpRequests()
-				.requestMatchers("/users/newUser").permitAll().requestMatchers("/users/loginUser").permitAll()
-				.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated().and()
-				.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().sessionManagement()
+				.requestMatchers("/v3/api-docs").permitAll().requestMatchers("/users/newUser").permitAll()
+				.requestMatchers("/users/loginUser").permitAll().requestMatchers(HttpMethod.GET).permitAll()
+				.anyRequest().authenticated().and().exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -82,7 +79,8 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
